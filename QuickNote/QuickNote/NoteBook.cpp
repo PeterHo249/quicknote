@@ -383,13 +383,212 @@ bool NoteBook::IsCreateNewDataFile()
 }
 
 // Add tag
-void NoteBook::AddNewTag(Tag* value)
+void NoteBook::AddNewTagFromFile(Tag* value)
 {
 	this->tagHashTable[value->GetHashCode()].push_back(value);
 }
 
 // Add note
-void NoteBook::AddNewNote(Note* value)
+void NoteBook::AddNewNoteFromFile(Note* value)
 {
 	this->noteList.push_back(value);
+}
+
+// Add new note
+void NoteBook::AddNewNote(Note* value)
+{
+	WCHAR* tagToken = new WCHAR[MAX_LOADSTRING];
+	ZeroMemory(tagToken, MAX_LOADSTRING * sizeof(WCHAR));
+	WCHAR* tagString = value->GetTagString();
+
+	// Add note to note list, pos is note index
+	int pos = 0;
+	if (this->blankPos.size() == 0)
+	{
+		this->noteList.push_back(value);
+		pos = this->noteList.size() - 1;
+	}
+	else
+	{
+		pos = this->blankPos.back();
+		this->noteList[pos] = value;
+		this->blankPos.pop_back();
+	}
+	noteCount++;
+
+	// Add note index to tag
+	int tokenIndex = 0;
+	for (int i = 0; tagString[i] != 0; i++)
+	{
+		if (tagString[i] == L',')
+		{
+			AddNoteIndex(pos, tagToken);
+
+			// Reset token string
+			i++;
+			tokenIndex = 0;
+			ZeroMemory(tagToken, MAX_LOADSTRING * sizeof(WCHAR));
+			continue;
+		}
+
+		tagToken[tokenIndex] = tagString[i];
+		tokenIndex++;
+	}
+	// The last token
+	AddNoteIndex(pos, tagToken);
+
+	// Free token string
+	if (tagToken != NULL)
+	{
+		delete[] tagToken;
+		tagToken = NULL;
+	}
+}
+
+// Add new tag
+void NoteBook::AddNewTag(Tag* value)
+{
+	this->tagHashTable[value->GetHashCode()].push_back(value);
+	tagCount++;
+}
+
+// Delete a note
+void NoteBook::DeteleNote(Note* value)
+{
+	int pos = 0;
+	// Get note position
+	for (unsigned int i = 0; i < this->noteList.size(); i++)
+	{
+		if (noteList[i] == value)
+		{
+			pos = i;
+			break;
+		}
+	}
+
+	// Delete note index in tag
+	Tag* tagTemp = NULL;
+	WCHAR* tagToken = new WCHAR[MAX_LOADSTRING];
+	ZeroMemory(tagToken, MAX_LOADSTRING * sizeof(WCHAR));
+	int tokenIndex = 0;
+	for (int i = 0; value->GetTagString()[i] != 0; i++)
+	{
+		if (value->GetTagString()[i] == L',')
+		{
+			tagTemp = SearchTag(tagToken);
+
+			if (tagTemp != NULL)
+				tagTemp->DeleteNoteIndex(pos);
+
+			// Reset token string
+			i++;
+			tokenIndex = 0;
+			ZeroMemory(tagToken, MAX_LOADSTRING * sizeof(WCHAR));
+			continue;
+		}
+
+		tagToken[tokenIndex] = value->GetTagString()[i];
+		tokenIndex++;
+	}
+	// Final token
+	tagTemp = SearchTag(tagToken);
+
+	if (tagTemp != NULL)
+		tagTemp->DeleteNoteIndex(pos);
+
+	// Delete note
+	if (noteList[pos] != NULL)
+	{
+		delete noteList[pos];
+		noteList[pos] = NULL;
+		blankPos.push_back(pos);
+		noteCount--;
+	}
+
+	// Free token string
+	if (tagToken != NULL)
+	{
+		delete[] tagToken;
+		tagToken = NULL;
+	}
+}
+
+// Modify a note
+void NoteBook::ModifyNote(Note* value, WCHAR* content, WCHAR* tagString)
+{
+	this->DeteleNote(value);
+	value = new Note(content, tagString);
+	this->AddNewNote(value);
+}
+
+// Add a note index to tag
+void NoteBook::AddNoteIndex(int pos, WCHAR* tagToken)
+{
+	// Search tag
+	Tag* tagTemp = NULL;
+	int code = GetHashCode(tagToken);
+	if (this->tagHashTable[code].size() == 0)
+	{
+		tagTemp = new Tag(tagToken);
+		AddNewTag(tagTemp);
+	}
+	else
+	{
+		bool found = false;
+
+		for (unsigned int i = 0; i < this->tagHashTable[code].size(); i++)
+		{
+			WCHAR* tagName = this->tagHashTable[code][i]->GetName();
+			if (wcscmp(tagToken, tagName) == 0)
+			{
+				tagTemp = this->tagHashTable[code][i];
+				found = true;
+				break;
+			}
+		}
+
+		if (!found)
+		{
+			tagTemp = new Tag(tagToken);
+			AddNewTag(tagTemp);
+		}
+	}
+
+	// Add note index to tag
+	tagTemp->AddNoteIndex(pos);
+}
+
+// Search a tag base on its name
+Tag* NoteBook::SearchTag(WCHAR* name)
+{
+	int code = GetHashCode(name);
+
+	// Not found
+	if (this->tagHashTable[code].size() == 0)
+	{
+		return NULL;
+	}
+	else
+	{
+		for (unsigned int i = 0; i < this->tagHashTable[code].size(); i++)
+		{
+			WCHAR* tagName = this->tagHashTable[code][i]->GetName();
+			if (wcscmp(name, tagName) == 0)
+			{
+				return this->tagHashTable[code][i];
+			}
+		}
+	}
+
+	return NULL;
+}
+
+int GetHashCode(WCHAR* string)
+{
+	int code = 0;
+	for (int i = 0; string[i] != 0; i++)
+	{
+		code += string[i];
+	}
+	return code % 131;
 }

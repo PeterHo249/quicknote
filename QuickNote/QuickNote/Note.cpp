@@ -78,22 +78,23 @@ void Note::StandardizeTagString()
 	ZeroMemory(newtagString, (length + 1 )* sizeof(WCHAR));
 	
 	int newtagIndex = 0;
+	bool validFlag = false;
 	for (int i = 0; i < length; i++)
 	{
-		while ((this->tagString[i] == L' ' && this->tagString[i - 1] == L' ') ||
-			(i == 0 && this->tagString[i] == L' '))
-			i++;
+		if (this->tagString[i] == L' ')
+			continue;
 
-		if (this->tagString[i] >= L'A' && this->tagString[i] <= L'Z')
+		if (this->tagString[i] == L',' && i != (length - 1))
 		{
-			newtagString[newtagIndex] = this->tagString[i] + 32;
+			newtagString[newtagIndex] = L',';
 			newtagIndex++;
-		}
-		else
-		{
-			newtagString[newtagIndex] = this->tagString[i];
+			newtagString[newtagIndex] = L' ';
 			newtagIndex++;
+			continue;
 		}
+
+		newtagString[newtagIndex] = this->tagString[i];
+		newtagIndex++;
 	}
 
 	delete[] this->tagString;

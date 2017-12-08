@@ -29,10 +29,31 @@ public:
 	// Check the data file is new
 	bool IsCreateNewDataFile();
 
-	// Add tag
+	// Add tag read from file
+	void AddNewTagFromFile(Tag* value);
+
+	// Add note read from file
+	void AddNewNoteFromFile(Note* value);
+
+	// Add new note
+	void AddNewNote(Note* value);
+
+	// Add new tag
 	void AddNewTag(Tag* value);
 
-	// Add note
-	void AddNewNote(Note* value);
+	// Delete a note
+	void DeteleNote(Note* value);
+
+	// Modify a note
+	void ModifyNote(Note* value, WCHAR* content, WCHAR* tagString);
+
+	// Add a note index to tag
+	void NoteBook::AddNoteIndex(int pos, WCHAR* tagToken);
+
+	// Search a tag base on its name
+	Tag* SearchTag(WCHAR* name);
+
 };
+
+int GetHashCode(WCHAR* string);
 
