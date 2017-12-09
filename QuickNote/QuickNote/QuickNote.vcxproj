@@ -170,6 +170,7 @@
     <ResourceCompile Include="QuickNote.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="icons8_note_50_Nbf_icon.ico" />
     <Image Include="QuickNote.ico" />
     <Image Include="small.ico" />
   </ItemGroup>

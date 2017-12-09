@@ -35,6 +35,8 @@ IDI_QUICKNOTE           ICON                    "QuickNote.ico"
 
 IDI_SMALL               ICON                    "small.ico"
 
+IDI_SYSTRAYICON         ICON                    "icons8_note_50_Nbf_icon.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -46,6 +48,9 @@ BEGIN
     POPUP "&File"
     BEGIN
         MENUITEM "E&xit",                       IDM_EXIT
+        MENUITEM "ViewNote",                    IDM_VIEWNOTE
+        MENUITEM "AddNote",                     IDM_ADDNOTE
+        MENUITEM "Statistics",                  IDM_STATISTICS
     END
     POPUP "&Help"
     BEGIN
@@ -87,19 +92,19 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMEN
 CAPTION "View Notebook"
 FONT 10, "Microsoft Sans Serif", 400, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "Ðóng",IDC_VIEW_EXIT,324,204,50,14
-    LTEXT           "Danh sách tag:",IDC_STATIC,7,12,46,8
-    LTEXT           "Danh sách ghi chú:",IDC_STATIC,81,12,57,8
-    GROUPBOX        "N?i dung ghi chú:",IDC_STATIC,162,12,212,187
-    LTEXT           "Ngày:",IDC_STATIC,173,31,19,8
-    LTEXT           "N?i dung:",IDC_STATIC,173,52,30,8
+    DEFPUSHBUTTON   "Close",IDC_VIEW_EXIT,324,204,50,14
+    LTEXT           "Tag list:",IDC_STATIC,7,12,25,8
+    LTEXT           "Note list:",IDC_STATIC,81,12,27,8
+    GROUPBOX        "Content of note:",IDC_STATIC,162,12,212,187
+    LTEXT           "Date:",IDC_STATIC,173,31,17,8
+    LTEXT           "Content:",IDC_STATIC,173,52,25,8
     LTEXT           "Tag:",IDC_STATIC,173,177,15,8
     EDITTEXT        IDC_VIEW_DATETXT,210,31,164,14,ES_AUTOHSCROLL | ES_READONLY | NOT WS_TABSTOP
     EDITTEXT        IDC_VIEW_CONTENTTXT,210,52,164,115,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL | NOT WS_TABSTOP
     EDITTEXT        IDC_VIEW_TAGTXT,210,177,164,14,ES_LOWERCASE | ES_AUTOHSCROLL | ES_READONLY | NOT WS_TABSTOP
     CONTROL         "",IDC_VIEW_TAGLISTTREE,"SysTreeView32",TVS_SHOWSELALWAYS | WS_BORDER | WS_HSCROLL | WS_TABSTOP,7,24,69,174
     CONTROL         "",IDC_VIEW_NOTELISTTREE,"SysTreeView32",TVS_SHOWSELALWAYS | WS_BORDER | WS_HSCROLL | WS_TABSTOP,81,24,76,175
-    PUSHBUTTON      "Ch?nh s?a",IDC_VIEW_MODIFYNOTE,258,204,50,14
+    PUSHBUTTON      "Modify note",IDC_VIEW_MODIFYNOTE,258,204,50,14
 END
 
 IDD_ADDNOTE DIALOGEX 0, 0, 341, 187
@@ -107,13 +112,13 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMEN
 CAPTION "Add New Note"
 FONT 10, "Microsoft Sans Serif", 400, 0, 0x0
 BEGIN
-    LTEXT           "N?i dung:",IDC_STATIC,36,37,32,8
+    LTEXT           "Content:",IDC_STATIC,36,37,32,8
     EDITTEXT        IDC_ADD_CONTENTTXT,78,35,232,89,ES_MULTILINE | ES_AUTOHSCROLL | WS_VSCROLL
     LTEXT           "Tag:",IDC_STATIC,35,135,16,8
     EDITTEXT        IDC_ADD_TAGTXT,78,132,234,14,ES_LOWERCASE | ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "Luu",IDC_ADD_SAVE,184,166,50,14
-    PUSHBUTTON      "H?y",IDC_ADD_CANCEL,257,166,50,14
-    GROUPBOX        "T?o ghi chú m?i",IDC_STATIC,19,15,298,146
+    DEFPUSHBUTTON   "Save",IDC_ADD_SAVE,184,166,50,14
+    PUSHBUTTON      "Cancel",IDC_ADD_CANCEL,257,166,50,14
+    GROUPBOX        "Add a new note",IDC_STATIC,19,15,298,146
 END
 
 IDD_STATISTICS DIALOGEX 0, 0, 336, 210
@@ -121,7 +126,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMEN
 CAPTION "Statistics"
 FONT 10, "Microsoft Sans Serif", 400, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "Thoát",IDC_STAT_EXIT,279,189,50,14
+    DEFPUSHBUTTON   "Close",IDC_STAT_EXIT,279,189,50,14
 END
 
 
@@ -215,6 +220,11 @@ STRINGTABLE
 BEGIN
     IDS_APP_TITLE           "QuickNote"
     IDC_QUICKNOTE           "QUICKNOTE"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SYSTRAYTOOLTIP      "Quick Note"
 END
 
 #endif    // English (United States) resources

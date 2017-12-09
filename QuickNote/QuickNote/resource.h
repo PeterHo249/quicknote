@@ -11,10 +11,14 @@
 #define IDI_QUICKNOTE                   107
 #define IDI_SMALL                       108
 #define IDC_QUICKNOTE                   109
+#define IDI_SYSTRAY                     110
+#define WM_SYSTRAY                      111
 #define IDR_MAINFRAME                   128
 #define IDD_VIEWNOTE                    129
 #define IDD_ADDNOTE                     130
 #define IDD_STATISTICS                  131
+#define IDI_SYSTRAYICON                 133
+#define IDS_SYSTRAYTOOLTIP              900
 #define IDC_ADD_CONTENTTXT              1000
 #define IDC_VIEW_CONTENTTXT             1001
 #define IDC_ADD_TAGTXT                  1001
@@ -27,6 +31,12 @@
 #define IDC_VIEW_EXIT                   1008
 #define IDC_VIEW_MODIFYNOTE             1010
 #define IDC_STAT_EXIT                   1011
+#define ID_FILE_VIEWNOTE                32772
+#define ID_FILE_ADDNOTE                 32773
+#define ID_FILE_STATISTICS              32774
+#define IDM_VIEWNOTE                    32775
+#define IDM_ADDNOTE                     32776
+#define IDM_STATISTICS                  32777
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -34,9 +44,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        132
-#define _APS_NEXT_COMMAND_VALUE         32772
+#define _APS_NEXT_RESOURCE_VALUE        134
+#define _APS_NEXT_COMMAND_VALUE         32778
 #define _APS_NEXT_CONTROL_VALUE         1012
-#define _APS_NEXT_SYMED_VALUE           110
+#define _APS_NEXT_SYMED_VALUE           118
 #endif
 #endif

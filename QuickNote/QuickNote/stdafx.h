@@ -31,11 +31,13 @@
 #include <ObjIdl.h>
 #include <gdiplus.h>
 #include <ctime>
+#include <shellapi.h>
 
 #include "Note.h"
 #include "Tag.h"
 #include "NoteBook.h"
 #include "QuickNote.h"
+#include "resource.h"
 
 using namespace std;
 using namespace Gdiplus;

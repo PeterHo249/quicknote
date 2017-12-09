@@ -10,6 +10,9 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 NoteBook* myNoteBook;
 HWND g_mainWindow;
 
+NOTIFYICONDATA nidApp;
+HMENU hMenu;
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPWSTR    lpCmdLine,
@@ -98,7 +101,17 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
-   ShowWindow(g_mainWindow, nCmdShow);
+   nidApp.cbSize = sizeof(NOTIFYICONDATA);
+   nidApp.hWnd = (HWND)g_mainWindow;
+   nidApp.uID = IDI_SYSTRAY;          
+   nidApp.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP; 
+   nidApp.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_SYSTRAYICON));
+   nidApp.uCallbackMessage = WM_SYSTRAY;
+   LoadString(hInstance, IDS_SYSTRAYTOOLTIP, nidApp.szTip, 128);
+   LoadString(hInstance, IDS_SYSTRAYTOOLTIP, nidApp.szInfo, 128);
+   Shell_NotifyIcon(NIM_ADD, &nidApp);
+
+   ShowWindow(g_mainWindow, SW_HIDE);
    UpdateWindow(g_mainWindow);
 
    return TRUE;
@@ -116,10 +129,35 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	POINT lpClickPoint;
     switch (message)
     {
 	case WM_CREATE:
 		myNoteBook = new NoteBook;
+		break;
+	case WM_SYSTRAY:
+	{
+		switch (LOWORD(lParam))
+		{
+		case WM_RBUTTONDOWN:
+		{
+			UINT uFlag = MF_BYPOSITION | MF_STRING;
+			GetCursorPos(&lpClickPoint);
+			hMenu = CreatePopupMenu();
+			InsertMenu(hMenu, -1, uFlag, ID_FILE_ADDNOTE, L"Add new note...");
+			InsertMenu(hMenu, -1, uFlag, ID_FILE_VIEWNOTE, L"View note list...");
+			InsertMenu(hMenu, -1, uFlag, ID_FILE_STATISTICS, L"Statistics...");
+			InsertMenu(hMenu, -1, uFlag, IDM_EXIT, L"Exit");
+			SetForegroundWindow(hWnd);
+			TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_BOTTOMALIGN,
+				lpClickPoint.x, lpClickPoint.y, 0, hWnd, NULL);
+		}
+			break;
+		case WM_LBUTTONDOWN:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_ADDNOTE), hWnd, AddNote_Dialog);
+			break;
+		}
+	}
 		break;
     case WM_COMMAND:
         {
@@ -127,6 +165,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // Parse the menu selections:
             switch (wmId)
             {
+			case ID_FILE_VIEWNOTE:
+				DialogBox(hInst, MAKEINTRESOURCE(IDD_VIEWNOTE), hWnd, ViewNote_Dialog);
+				break;
+			case ID_FILE_ADDNOTE:
+				DialogBox(hInst, MAKEINTRESOURCE(IDD_ADDNOTE), hWnd, AddNote_Dialog);
+				break;
+			case ID_FILE_STATISTICS:
+				DialogBox(hInst, MAKEINTRESOURCE(IDD_STATISTICS), hWnd, Statistics_Dialog);
+				break;
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
@@ -152,6 +199,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_CLOSE:
 		if (myNoteBook != NULL)
 			delete myNoteBook;
+		Shell_NotifyIcon(NIM_DELETE, &nidApp);
 		PostQuitMessage(0);
 		break;
     default:
@@ -195,6 +243,9 @@ INT_PTR CALLBACK	ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 		int id = LOWORD(wParam);
 		switch (id)
 		{
+		case IDC_VIEW_EXIT:
+			EndDialog(hDlg, true);
+			break;
 		default:
 			break;
 		}
@@ -202,6 +253,7 @@ INT_PTR CALLBACK	ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 	break;
 
 	case WM_CLOSE:
+		EndDialog(hDlg, true);
 		break;
 	}
 
@@ -222,6 +274,9 @@ INT_PTR CALLBACK	AddNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 		int id = LOWORD(wParam);
 		switch (id)
 		{
+		case IDC_ADD_CANCEL:
+			EndDialog(hDlg, true);
+			break;
 		default:
 			break;
 		}
@@ -229,6 +284,7 @@ INT_PTR CALLBACK	AddNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 	break;
 
 	case WM_CLOSE:
+		EndDialog(hDlg, true);
 		break;
 	}
 
@@ -249,6 +305,9 @@ INT_PTR CALLBACK	Statistics_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARA
 		int id = LOWORD(wParam);
 		switch (id)
 		{
+		case IDC_STAT_EXIT:
+			EndDialog(hDlg, true);
+			break;
 		default:
 			break;
 		}
@@ -256,6 +315,7 @@ INT_PTR CALLBACK	Statistics_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARA
 	break;
 
 	case WM_CLOSE:
+		EndDialog(hDlg, true);
 		break;
 	}
 

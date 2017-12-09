@@ -69,5 +69,8 @@
     <Image Include="QuickNote.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="icons8_note_50_Nbf_icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
