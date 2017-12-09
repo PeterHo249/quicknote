@@ -8,6 +8,7 @@ HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 NoteBook* myNoteBook;
+HWND g_mainWindow;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -89,16 +90,16 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Store instance handle in our global variable
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+   HWND g_mainWindow = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
-   if (!hWnd)
+   if (!g_mainWindow)
    {
       return FALSE;
    }
 
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
+   ShowWindow(g_mainWindow, nCmdShow);
+   UpdateWindow(g_mainWindow);
 
    return TRUE;
 }
@@ -177,4 +178,86 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return (INT_PTR)FALSE;
+}
+
+
+INT_PTR CALLBACK	ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(lParam);
+
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		break;
+
+	case WM_COMMAND:
+	{
+		int id = LOWORD(wParam);
+		switch (id)
+		{
+		default:
+			break;
+		}
+	}
+	break;
+
+	case WM_CLOSE:
+		break;
+	}
+
+	return (INT_PTR)FALSE;
+}
+
+INT_PTR CALLBACK	AddNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(lParam);
+
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		break;
+
+	case WM_COMMAND:
+	{
+		int id = LOWORD(wParam);
+		switch (id)
+		{
+		default:
+			break;
+		}
+	}
+	break;
+
+	case WM_CLOSE:
+		break;
+	}
+
+	return (INT_PTR)FALSE;
+}
+
+INT_PTR CALLBACK	Statistics_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(lParam);
+
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		break;
+
+	case WM_COMMAND:
+	{
+		int id = LOWORD(wParam);
+		switch (id)
+		{
+		default:
+			break;
+		}
+	}
+	break;
+
+	case WM_CLOSE:
+		break;
+	}
+
+	return (INT_PTR)FALSE;
 }

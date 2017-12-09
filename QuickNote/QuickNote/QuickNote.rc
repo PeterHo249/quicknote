@@ -1,4 +1,4 @@
-//Microsoft Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,11 +13,16 @@
 #define APSTUDIO_HIDDEN_SYMBOLS
 #include "windows.h"
 #undef APSTUDIO_HIDDEN_SYMBOLS
+
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-LANGUAGE 9, 1
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -26,9 +31,10 @@ LANGUAGE 9, 1
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
+IDI_QUICKNOTE           ICON                    "QuickNote.ico"
 
-IDI_QUICKNOTE       ICON         "QuickNote.ico"
-IDI_SMALL               ICON         "small.ico"
+IDI_SMALL               ICON                    "small.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -39,11 +45,11 @@ IDC_QUICKNOTE MENU
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "E&xit",                IDM_EXIT
+        MENUITEM "E&xit",                       IDM_EXIT
     END
     POPUP "&Help"
     BEGIN
-        MENUITEM "&About ...",           IDM_ABOUT
+        MENUITEM "&About ...",                  IDM_ABOUT
     END
 END
 
@@ -55,8 +61,8 @@ END
 
 IDC_QUICKNOTE ACCELERATORS
 BEGIN
-    "?",            IDM_ABOUT,              ASCII,  ALT
-    "/",            IDM_ABOUT,              ASCII,  ALT
+    "/",            IDM_ABOUT,              ASCII,  ALT, NOINVERT
+    "?",            IDM_ABOUT,              ASCII,  ALT, NOINVERT
 END
 
 
@@ -68,13 +74,56 @@ END
 IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About QuickNote"
-FONT 8, "MS Shell Dlg"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,14,14,21,20
     LTEXT           "QuickNote, Version 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2017",IDC_STATIC,42,26,114,8
     DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
 END
+
+IDD_VIEWNOTE DIALOGEX 0, 0, 381, 225
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "View Notebook"
+FONT 10, "Microsoft Sans Serif", 400, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "Ðóng",IDC_VIEW_EXIT,324,204,50,14
+    LTEXT           "Danh sách tag:",IDC_STATIC,7,12,46,8
+    LTEXT           "Danh sách ghi chú:",IDC_STATIC,81,12,57,8
+    GROUPBOX        "N?i dung ghi chú:",IDC_STATIC,162,12,212,187
+    LTEXT           "Ngày:",IDC_STATIC,173,31,19,8
+    LTEXT           "N?i dung:",IDC_STATIC,173,52,30,8
+    LTEXT           "Tag:",IDC_STATIC,173,177,15,8
+    EDITTEXT        IDC_VIEW_DATETXT,210,31,164,14,ES_AUTOHSCROLL | ES_READONLY | NOT WS_TABSTOP
+    EDITTEXT        IDC_VIEW_CONTENTTXT,210,52,164,115,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL | NOT WS_TABSTOP
+    EDITTEXT        IDC_VIEW_TAGTXT,210,177,164,14,ES_LOWERCASE | ES_AUTOHSCROLL | ES_READONLY | NOT WS_TABSTOP
+    CONTROL         "",IDC_VIEW_TAGLISTTREE,"SysTreeView32",TVS_SHOWSELALWAYS | WS_BORDER | WS_HSCROLL | WS_TABSTOP,7,24,69,174
+    CONTROL         "",IDC_VIEW_NOTELISTTREE,"SysTreeView32",TVS_SHOWSELALWAYS | WS_BORDER | WS_HSCROLL | WS_TABSTOP,81,24,76,175
+    PUSHBUTTON      "Ch?nh s?a",IDC_VIEW_MODIFYNOTE,258,204,50,14
+END
+
+IDD_ADDNOTE DIALOGEX 0, 0, 341, 187
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Add New Note"
+FONT 10, "Microsoft Sans Serif", 400, 0, 0x0
+BEGIN
+    LTEXT           "N?i dung:",IDC_STATIC,36,37,32,8
+    EDITTEXT        IDC_ADD_CONTENTTXT,78,35,232,89,ES_MULTILINE | ES_AUTOHSCROLL | WS_VSCROLL
+    LTEXT           "Tag:",IDC_STATIC,35,135,16,8
+    EDITTEXT        IDC_ADD_TAGTXT,78,132,234,14,ES_LOWERCASE | ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "Luu",IDC_ADD_SAVE,184,166,50,14
+    PUSHBUTTON      "H?y",IDC_ADD_CANCEL,257,166,50,14
+    GROUPBOX        "T?o ghi chú m?i",IDC_STATIC,19,15,298,146
+END
+
+IDD_STATISTICS DIALOGEX 0, 0, 336, 210
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Statistics"
+FONT 10, "Microsoft Sans Serif", 400, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "Thoát",IDC_STAT_EXIT,279,189,50,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -91,20 +140,53 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 55
     END
+
+    IDD_VIEWNOTE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 374
+        VERTGUIDE, 173
+        VERTGUIDE, 210
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 218
+        HORZGUIDE, 12
+        HORZGUIDE, 24
+        HORZGUIDE, 31
+        HORZGUIDE, 52
+        HORZGUIDE, 177
+    END
+
+    IDD_ADDNOTE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 334
+        TOPMARGIN, 6
+        BOTTOMMARGIN, 180
+    END
+
+    IDD_STATISTICS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 329
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 203
+    END
 END
 #endif    // APSTUDIO_INVOKED
+
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
 // TEXTINCLUDE
 //
-1 TEXTINCLUDE
+
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE
+2 TEXTINCLUDE 
 BEGIN
     "#ifndef APSTUDIO_INVOKED\r\n"
     "#include ""targetver.h""\r\n"
@@ -115,13 +197,14 @@ BEGIN
     "\0"
 END
 
-3 TEXTINCLUDE
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"
 END
 
 #endif    // APSTUDIO_INVOKED
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -130,11 +213,11 @@ END
 
 STRINGTABLE
 BEGIN
-   IDC_QUICKNOTE   "QUICKNOTE"
-   IDS_APP_TITLE       "QuickNote"
+    IDS_APP_TITLE           "QuickNote"
+    IDC_QUICKNOTE           "QUICKNOTE"
 END
 
-#endif
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -145,5 +228,7 @@ END
 // Generated from the TEXTINCLUDE 3 resource.
 //
 
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
+
