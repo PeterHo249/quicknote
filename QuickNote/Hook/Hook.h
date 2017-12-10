@@ -9,3 +9,8 @@
 #else
 #define HOOK_API __declspec(dllimport)
 #endif
+
+HOOK_API void _installHook(HWND hWnd);
+HOOK_API void _removeHook(HWND hWnd);
+
+LRESULT CALLBACK LLKeyboardHookProc(int nCode, WPARAM wParam, LPARAM lParam);

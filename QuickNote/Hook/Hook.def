@@ -1,0 +1,4 @@
+EXPORTS
+
+_installHook @1
+_removeHook @2

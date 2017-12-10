@@ -134,6 +134,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
 	case WM_CREATE:
 		myNoteBook = new NoteBook;
+		InstallHook(hWnd);
 		break;
 	case WM_SYSTRAY:
 	{
@@ -144,9 +145,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			UINT uFlag = MF_BYPOSITION | MF_STRING;
 			GetCursorPos(&lpClickPoint);
 			hMenu = CreatePopupMenu();
-			InsertMenu(hMenu, -1, uFlag, ID_FILE_ADDNOTE, L"Add new note...");
-			InsertMenu(hMenu, -1, uFlag, ID_FILE_VIEWNOTE, L"View note list...");
-			InsertMenu(hMenu, -1, uFlag, ID_FILE_STATISTICS, L"Statistics...");
+			InsertMenu(hMenu, -1, uFlag, IDM_ADDNOTE, L"Add new note...");
+			InsertMenu(hMenu, -1, uFlag, IDM_VIEWNOTE, L"View note list...");
+			InsertMenu(hMenu, -1, uFlag, IDM_STATISTICS, L"Statistics...");
 			InsertMenu(hMenu, -1, uFlag, IDM_EXIT, L"Exit");
 			SetForegroundWindow(hWnd);
 			TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_BOTTOMALIGN,
@@ -165,13 +166,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // Parse the menu selections:
             switch (wmId)
             {
-			case ID_FILE_VIEWNOTE:
+			case IDM_VIEWNOTE:
 				DialogBox(hInst, MAKEINTRESOURCE(IDD_VIEWNOTE), hWnd, ViewNote_Dialog);
 				break;
-			case ID_FILE_ADDNOTE:
+			case IDM_ADDNOTE:
 				DialogBox(hInst, MAKEINTRESOURCE(IDD_ADDNOTE), hWnd, AddNote_Dialog);
 				break;
-			case ID_FILE_STATISTICS:
+			case IDM_STATISTICS:
 				DialogBox(hInst, MAKEINTRESOURCE(IDD_STATISTICS), hWnd, Statistics_Dialog);
 				break;
             case IDM_ABOUT:
@@ -199,6 +200,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_CLOSE:
 		if (myNoteBook != NULL)
 			delete myNoteBook;
+		UninstallHook(hWnd);
 		Shell_NotifyIcon(NIM_DELETE, &nidApp);
 		PostQuitMessage(0);
 		break;
@@ -320,4 +322,34 @@ INT_PTR CALLBACK	Statistics_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARA
 	}
 
 	return (INT_PTR)FALSE;
+}
+
+void InstallHook(HWND hWnd)
+{
+	typedef VOID(*MYPROC)(HWND);
+
+	HINSTANCE hinstLib;
+	MYPROC ProcAddr;
+
+	hinstLib = LoadLibrary(L"QuickNoteHook.dll");
+	if (hinstLib != NULL) {
+		ProcAddr = (MYPROC)GetProcAddress(hinstLib, "_installHook");
+		if (ProcAddr != NULL)
+			ProcAddr(hWnd);
+	}
+}
+
+void UninstallHook(HWND hWnd)
+{
+	typedef VOID(*MYPROC)(HWND);
+
+	HINSTANCE hinstLib;
+	MYPROC ProcAddr;
+
+	hinstLib = LoadLibrary(L"QuickNoteHook.dll");
+	if (hinstLib != NULL) {
+		ProcAddr = (MYPROC)GetProcAddress(hinstLib, "_removeHook");
+		if (ProcAddr != NULL)
+			ProcAddr(hWnd);
+	}
 }

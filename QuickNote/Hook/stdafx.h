@@ -14,3 +14,4 @@
 
 
 // TODO: reference additional headers your program requires here
+#define IDM_ADDNOTE                     32776
