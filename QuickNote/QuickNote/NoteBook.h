@@ -38,6 +38,9 @@ public:
 	// Add new note
 	void AddNewNote(Note* value);
 
+	// Add new note (override)
+	void AddNewNote(WCHAR* content, WCHAR* tagString);
+
 	// Add new tag
 	void AddNewTag(Tag* value);
 
@@ -45,7 +48,7 @@ public:
 	void DeteleNote(Note* value);
 
 	// Modify a note
-	void ModifyNote(Note* value, WCHAR* content, WCHAR* tagString);
+	void ModifyNote(int pos, WCHAR* content, WCHAR* tagString);
 
 	// Add a note index to tag
 	void NoteBook::AddNoteIndex(int pos, WCHAR* tagToken);
@@ -53,6 +56,13 @@ public:
 	// Search a tag base on its name
 	Tag* SearchTag(WCHAR* name);
 
+	vector<vector<Tag*>> GetTagList();
+
+	Note* GetNoteAt(int pos);
+
+	Tag* GetTag(int pos);
+
+	void DeleteNoteAt(int pos);
 };
 
 int GetHashCode(WCHAR* string);

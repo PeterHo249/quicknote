@@ -116,3 +116,8 @@ WCHAR* Note::GetTagString()
 {
 	return this->tagString;
 }
+
+WCHAR* Note::GetPreview()
+{
+	return this->previewNote;
+}

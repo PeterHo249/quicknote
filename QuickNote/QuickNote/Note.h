@@ -25,5 +25,6 @@ public:
 	WCHAR* GetDate();
 	WCHAR* GetContent();
 	WCHAR* GetTagString();
+	WCHAR* GetPreview();
 };
 

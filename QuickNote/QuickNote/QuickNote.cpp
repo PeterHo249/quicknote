@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "resource.h"
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
@@ -12,6 +13,7 @@ HWND g_mainWindow;
 
 NOTIFYICONDATA nidApp;
 HMENU hMenu;
+int currentNotePos = -1;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -134,6 +136,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
 	case WM_CREATE:
 		myNoteBook = new NoteBook;
+		INITCOMMONCONTROLSEX icex;
+		// Ensure that the common control DLL is loaded. 
+		icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+		icex.dwICC = ICC_LISTVIEW_CLASSES | ICC_TREEVIEW_CLASSES;
+		InitCommonControlsEx(&icex);
 		InstallHook(hWnd);
 		break;
 	case WM_SYSTRAY:
@@ -179,7 +186,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
             case IDM_EXIT:
-                DestroyWindow(hWnd);
+				SendMessage(hWnd, WM_CLOSE, 0, 0);
                 break;
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
@@ -230,14 +237,118 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     return (INT_PTR)FALSE;
 }
 
-
 INT_PTR CALLBACK	ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
 
+	HWND tagTreeView = GetDlgItem(hDlg, IDC_VIEW_TAGLISTTREE);
+	HWND noteTreeView = GetDlgItem(hDlg, IDC_VIEW_NOTELISTTREE);
+
 	switch (message)
 	{
 	case WM_INITDIALOG:
+	{
+		// Initial tag list
+		TreeView_DeleteAllItems(tagTreeView);
+		vector<vector<Tag*>> tagList = myNoteBook->GetTagList();
+
+		int index = 0;
+		for (unsigned int i = 0; i < tagList.size(); i++)
+		{
+			for (unsigned int j = 0; j < tagList[i].size(); j++)
+			{
+				TVINSERTSTRUCT tvItem;
+				tvItem.hParent = NULL;
+				tvItem.hInsertAfter = TVI_LAST;
+				tvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
+				tvItem.item.pszText = tagList[i][j]->GetName();
+				WCHAR* tempStr = new WCHAR[10];
+				wsprintf(tempStr, L"%d", index);
+				tvItem.item.lParam = (LPARAM)tempStr;
+				TreeView_InsertItem(tagTreeView, &tvItem);
+				index++;
+			}
+		}
+
+		// Initial note list
+		TreeView_DeleteAllItems(noteTreeView);
+	}
+		break;
+
+	case WM_NOTIFY:
+	{
+		// Catch message of tree view
+
+		int wmId = LOWORD(wParam);
+		switch (wmId)
+		{
+		// Message of tag tree view
+		case IDC_VIEW_TAGLISTTREE:
+		{
+			LPNMTREEVIEW pnmtv = (LPNMTREEVIEW)lParam;
+			NMHDR info = pnmtv->hdr;
+			
+			if (TVN_SELCHANGED == info.code)
+			{
+				// Reload note tree view
+				TreeView_DeleteAllItems(noteTreeView);
+				SetDlgItemText(hDlg, IDC_VIEW_DATETXT, L"");
+				SetDlgItemText(hDlg, IDC_VIEW_CONTENTTXT, L"");
+				SetDlgItemText(hDlg, IDC_VIEW_TAGTXT, L"");
+
+				TVITEM tvItem = pnmtv->itemNew;
+
+				vector<int> noteIndexList = myNoteBook->GetTag(_wtoi((WCHAR*)tvItem.lParam))->GetNoteList();
+
+				for (unsigned int i = 0; i < noteIndexList.size(); i++)
+				{
+					Note* pNote = myNoteBook->GetNoteAt(noteIndexList[i]);
+					if (pNote != NULL)
+					{
+						// Add new item to tree view
+						TVINSERTSTRUCT tvItem;
+						tvItem.hParent = NULL;
+						tvItem.hInsertAfter = TVI_LAST;
+						tvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
+						tvItem.item.pszText = pNote->GetPreview();
+						WCHAR* tempStr = new WCHAR[10];
+						wsprintf(tempStr, L"%d", noteIndexList[i]);
+						tvItem.item.lParam = (LPARAM)tempStr;
+						TreeView_InsertItem(noteTreeView, &tvItem);
+					}
+				}
+			}
+		}
+		break;
+
+		// Message of note tree view
+		case IDC_VIEW_NOTELISTTREE:
+		{
+			LPNMTREEVIEW pnmtv = (LPNMTREEVIEW)lParam;
+			NMHDR info = pnmtv->hdr;
+
+			if (TVN_SELCHANGED == info.code)
+			{
+				// Reload content of note
+				TVITEM tvItem = pnmtv->itemNew;
+
+				Note* pNote = myNoteBook->GetNoteAt(_wtoi((WCHAR*)tvItem.lParam));
+				currentNotePos = _wtoi((WCHAR*)tvItem.lParam);
+
+				if (pNote != NULL)
+				{
+					WCHAR* temp = pNote->GetDate();
+					SetDlgItemText(hDlg, IDC_VIEW_DATETXT, temp);
+					temp = pNote->GetContent();
+					SetDlgItemText(hDlg, IDC_VIEW_CONTENTTXT, temp);
+					temp = pNote->GetTagString();
+					SetDlgItemText(hDlg, IDC_VIEW_TAGTXT, temp);
+				}
+			}
+		}
+			break;
+		}
+	}
 		break;
 
 	case WM_COMMAND:
@@ -245,6 +356,18 @@ INT_PTR CALLBACK	ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 		int id = LOWORD(wParam);
 		switch (id)
 		{
+		case IDC_VIEW_DELETE:
+			myNoteBook->DeleteNoteAt(currentNotePos);
+			RefreshView(hDlg);
+			break;
+
+		case IDC_VIEW_MODIFYNOTE:
+			if (currentNotePos == -1)
+				break;
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_MODIFY), hDlg, Modify_Dialog);
+			RefreshView(hDlg);
+			break;
+
 		case IDC_VIEW_EXIT:
 			EndDialog(hDlg, true);
 			break;
@@ -276,6 +399,38 @@ INT_PTR CALLBACK	AddNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 		int id = LOWORD(wParam);
 		switch (id)
 		{
+		case IDC_ADD_SAVE:
+		{
+			WCHAR* contentString = new WCHAR[MAX_LOADSTRING + 1];
+			WCHAR* tagString = new WCHAR[MAX_LOADSTRING + 1];
+			ZeroMemory(contentString, (MAX_LOADSTRING + 1) * sizeof(WCHAR));
+			ZeroMemory(tagString, (MAX_LOADSTRING + 1) * sizeof(WCHAR));
+
+			GetDlgItemText(hDlg, IDC_ADD_CONTENTTXT, contentString, MAX_LOADSTRING);
+			GetDlgItemText(hDlg, IDC_ADD_TAGTXT, tagString, MAX_LOADSTRING);
+
+			if (wcslen(contentString) == 0 || wcslen(tagString) == 0)
+			{
+				// Show something to notify error
+				if (wcslen(contentString) == 0)
+					ShowWindow(GetDlgItem(hDlg, IDC_ADD_ERROR_CONTENT), SW_SHOW);
+				else
+					ShowWindow(GetDlgItem(hDlg, IDC_ADD_ERROR_CONTENT), SW_HIDE);
+
+				if (wcslen(tagString) == 0)
+					ShowWindow(GetDlgItem(hDlg, IDC_ADD_ERROR_TAG), SW_SHOW);
+				else
+					ShowWindow(GetDlgItem(hDlg, IDC_ADD_ERROR_TAG), SW_HIDE);
+
+				break;
+			}
+			else
+			{
+				myNoteBook->AddNewNote(contentString, tagString);
+				EndDialog(hDlg, TRUE);
+			}
+		}
+			break;
 		case IDC_ADD_CANCEL:
 			EndDialog(hDlg, true);
 			break;
@@ -324,6 +479,74 @@ INT_PTR CALLBACK	Statistics_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARA
 	return (INT_PTR)FALSE;
 }
 
+INT_PTR CALLBACK	Modify_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(lParam);
+
+	switch (message)
+	{
+	case WM_INITDIALOG:
+	{
+		Note* noteTemp = myNoteBook->GetNoteAt(currentNotePos);
+		SetDlgItemText(hDlg, IDC_MODIFY_CONTENTTXT, noteTemp->GetContent());
+		SetDlgItemText(hDlg, IDC_MODIFY_TAGTXT, noteTemp->GetTagString());
+	}
+		break;
+
+	case WM_COMMAND:
+	{
+		int id = LOWORD(wParam);
+		switch (id)
+		{
+		case IDC_MODIFY_SAVE:
+		{
+			WCHAR* contentString = new WCHAR[MAX_LOADSTRING + 1];
+			WCHAR* tagString = new WCHAR[MAX_LOADSTRING + 1];
+			ZeroMemory(contentString, (MAX_LOADSTRING + 1) * sizeof(WCHAR));
+			ZeroMemory(tagString, (MAX_LOADSTRING + 1) * sizeof(WCHAR));
+
+			GetDlgItemText(hDlg, IDC_MODIFY_CONTENTTXT, contentString, MAX_LOADSTRING);
+			GetDlgItemText(hDlg, IDC_MODIFY_TAGTXT, tagString, MAX_LOADSTRING);
+
+			if (wcslen(contentString) == 0 || wcslen(tagString) == 0)
+			{
+				// Show something to notify error
+				if (wcslen(contentString) == 0)
+					ShowWindow(GetDlgItem(hDlg, IDC_MODIFY_ERROR_CONTENT), SW_SHOW);
+				else
+					ShowWindow(GetDlgItem(hDlg, IDC_MODIFY_ERROR_CONTENT), SW_HIDE);
+
+				if (wcslen(tagString) == 0)
+					ShowWindow(GetDlgItem(hDlg, IDC_MODIFY_ERROR_TAG), SW_SHOW);
+				else
+					ShowWindow(GetDlgItem(hDlg, IDC_MODIFY_ERROR_TAG), SW_HIDE);
+
+				break;
+			}
+			else
+			{
+				myNoteBook->ModifyNote(currentNotePos, contentString, tagString);
+				EndDialog(hDlg, TRUE);
+			}
+		}
+			break;
+		case IDC_MODIFY_CANCEL:
+			EndDialog(hDlg, true);
+			break;
+		default:
+			break;
+		}
+	}
+	break;
+
+	case WM_CLOSE:
+		EndDialog(hDlg, true);
+		break;
+	}
+
+	return (INT_PTR)FALSE;
+}
+
 void InstallHook(HWND hWnd)
 {
 	typedef VOID(*MYPROC)(HWND);
@@ -351,5 +574,40 @@ void UninstallHook(HWND hWnd)
 		ProcAddr = (MYPROC)GetProcAddress(hinstLib, "_removeHook");
 		if (ProcAddr != NULL)
 			ProcAddr(hWnd);
+	}
+}
+
+void RefreshView(HWND hDlg)
+{
+	currentNotePos = -1;
+
+	HWND tagTreeView = GetDlgItem(hDlg, IDC_VIEW_TAGLISTTREE);
+	HWND noteTreeView = GetDlgItem(hDlg, IDC_VIEW_NOTELISTTREE);
+
+	TreeView_DeleteAllItems(tagTreeView);
+	TreeView_DeleteAllItems(noteTreeView);
+
+	SetDlgItemText(hDlg, IDC_VIEW_DATETXT, L"");
+	SetDlgItemText(hDlg, IDC_VIEW_CONTENTTXT, L"");
+	SetDlgItemText(hDlg, IDC_VIEW_TAGTXT, L"");
+
+	vector<vector<Tag*>> tagList = myNoteBook->GetTagList();
+
+	int index = 0;
+	for (unsigned int i = 0; i < tagList.size(); i++)
+	{
+		for (unsigned int j = 0; j < tagList[i].size(); j++)
+		{
+			TVINSERTSTRUCT tvItem;
+			tvItem.hParent = NULL;
+			tvItem.hInsertAfter = TVI_LAST;
+			tvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
+			tvItem.item.pszText = tagList[i][j]->GetName();
+			WCHAR* tempStr = new WCHAR[10];
+			wsprintf(tempStr, L"%d", index);
+			tvItem.item.lParam = (LPARAM)tempStr;
+			TreeView_InsertItem(tagTreeView, &tvItem);
+			index++;
+		}
 	}
 }

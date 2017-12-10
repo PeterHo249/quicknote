@@ -140,7 +140,10 @@ bool NoteBook::WriteDataToFile()
 			wsprintf(blankPosString, L"%s %d", blankPosString, blankPos[i]);
 		}
 	}
-	WritePrivateProfileString(L"notebook", L"blankpos", blankPosString, dataPath);
+	if (blankPosSize == 0)
+		WritePrivateProfileString(L"notebook", L"blankpos", L"", dataPath);
+	else
+		WritePrivateProfileString(L"notebook", L"blankpos", blankPosString, dataPath);
 	if (blankPosString != NULL)
 	{
 		delete[] blankPosString;
@@ -217,6 +220,8 @@ bool NoteBook::ReadDataFromFile()
 	GetPrivateProfileString(L"notebook", L"tagcount", L"", tempString, 5, dataPath);
 	if (wcslen(tempString) != 0)
 		this->tagCount = _wtoi(tempString);
+	else
+		return false;
 
 	// Note count
 	ZeroMemory(tempString, 5 * sizeof(WCHAR));
@@ -514,11 +519,12 @@ void NoteBook::DeteleNote(Note* value)
 }
 
 // Modify a note
-void NoteBook::ModifyNote(Note* value, WCHAR* content, WCHAR* tagString)
+void NoteBook::ModifyNote(int pos, WCHAR* content, WCHAR* tagString)
 {
-	this->DeteleNote(value);
-	value = new Note(content, tagString);
-	this->AddNewNote(value);
+	Note* noteTemp = this->GetNoteAt(pos);
+	this->DeteleNote(noteTemp);
+	noteTemp = new Note(content, tagString);
+	this->AddNewNote(noteTemp);
 }
 
 // Add a note index to tag
@@ -529,7 +535,10 @@ void NoteBook::AddNoteIndex(int pos, WCHAR* tagToken)
 	int code = GetHashCode(tagToken);
 	if (this->tagHashTable[code].size() == 0)
 	{
-		tagTemp = new Tag(tagToken);
+		WCHAR* newTagToken = new WCHAR[MAX_LOADSTRING];
+		ZeroMemory(newTagToken, MAX_LOADSTRING * sizeof(WCHAR));
+		wcscpy_s(newTagToken, MAX_LOADSTRING, tagToken);
+		tagTemp = new Tag(newTagToken);
 		AddNewTag(tagTemp);
 	}
 	else
@@ -549,7 +558,10 @@ void NoteBook::AddNoteIndex(int pos, WCHAR* tagToken)
 
 		if (!found)
 		{
-			tagTemp = new Tag(tagToken);
+			WCHAR* newTagToken = new WCHAR[MAX_LOADSTRING];
+			ZeroMemory(newTagToken, MAX_LOADSTRING * sizeof(WCHAR));
+			wcscpy_s(newTagToken, MAX_LOADSTRING, tagToken);
+			tagTemp = new Tag(newTagToken);
 			AddNewTag(tagTemp);
 		}
 	}
@@ -583,6 +595,13 @@ Tag* NoteBook::SearchTag(WCHAR* name)
 	return NULL;
 }
 
+// Add new note (override)
+void NoteBook::AddNewNote(WCHAR* content, WCHAR* tagString)
+{
+	Note* noteTemp = new Note(content, tagString);
+	this->AddNewNote(noteTemp);
+}
+
 int GetHashCode(WCHAR* string)
 {
 	int code = 0;
@@ -591,4 +610,41 @@ int GetHashCode(WCHAR* string)
 		code += string[i];
 	}
 	return code % 131;
+}
+
+vector<vector<Tag*>> NoteBook::GetTagList()
+{
+	return this->tagHashTable;
+}
+
+Note* NoteBook::GetNoteAt(int pos)
+{
+	if (pos >= 0 && pos < this->noteList.size())
+		return this->noteList[pos];
+	else
+		return NULL;
+}
+
+Tag* NoteBook::GetTag(int pos)
+{
+	int index = 0;
+
+	for (unsigned int i = 0; i < this->tagHashTable.size(); i++)
+	{
+		for (unsigned int j = 0; j < this->tagHashTable[i].size(); j++)
+		{
+			if (index == pos)
+				return this->tagHashTable[i][j];
+
+			index++;
+		}
+	}
+
+	return NULL;
+}
+
+void NoteBook::DeleteNoteAt(int pos)
+{
+	Note* noteTemp = GetNoteAt(pos);
+	this->DeteleNote(noteTemp);
 }

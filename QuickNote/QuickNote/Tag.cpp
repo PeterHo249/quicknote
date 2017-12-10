@@ -86,8 +86,11 @@ int Tag::GetHashCode()
 WCHAR* Tag::ConvertIndexListToString()
 {
 	int length = this->noteIndexList.size();
-	WCHAR* buffer = new WCHAR[length * 5];
-	ZeroMemory(buffer, length * 5 * sizeof(WCHAR));
+	WCHAR* buffer = new WCHAR[length * 5 + 1];
+	ZeroMemory(buffer, (length * 5 + 1) * sizeof(WCHAR));
+
+	if (length == 0)
+		return buffer;
 
 	for (int i = 0; i < length; i++)
 	{
@@ -113,4 +116,14 @@ WCHAR* Tag::GetName()
 WCHAR* Tag::GetNoteIndexString()
 {
 	return ConvertIndexListToString();
+}
+
+vector<int> Tag::GetNoteList()
+{
+	return this->noteIndexList;
+}
+
+Tag* Tag::GetAddress()
+{
+	return this;
 }

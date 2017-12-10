@@ -30,5 +30,7 @@ public:
 	// Get
 	WCHAR* GetName();
 	WCHAR* GetNoteIndexString();
+	vector<int> GetNoteList();
+	Tag* GetAddress();
 };
 

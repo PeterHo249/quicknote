@@ -13,6 +13,8 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wparam, LPARAM lparam);
 INT_PTR CALLBACK	AddNote_Dialog(HWND hDlg, UINT message, WPARAM wparam, LPARAM lparam);
 INT_PTR CALLBACK	Statistics_Dialog(HWND hDlg, UINT message, WPARAM wparam, LPARAM lparam);
+INT_PTR CALLBACK	Modify_Dialog(HWND hDlg, UINT message, WPARAM wparam, LPARAM lparam);
 
 void InstallHook(HWND hWnd);
 void UninstallHook(HWND hWnd);
+void RefreshView(HWND hDlg);
