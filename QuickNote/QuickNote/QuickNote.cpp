@@ -71,12 +71,12 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.cbClsExtra     = 0;
     wcex.cbWndExtra     = 0;
     wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_QUICKNOTE));
+    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_SYSTRAYICON));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+    wcex.hbrBackground  = (HBRUSH)(COLOR_BTNFACE+1);
     wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_QUICKNOTE);
     wcex.lpszClassName  = szWindowClass;
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SYSTRAYICON));
 
     return RegisterClassExW(&wcex);
 }
@@ -272,6 +272,8 @@ INT_PTR CALLBACK	ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 
 		// Initial note list
 		TreeView_DeleteAllItems(noteTreeView);
+
+		return (INT_PTR)TRUE;
 	}
 		break;
 
@@ -392,6 +394,7 @@ INT_PTR CALLBACK	AddNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 	switch (message)
 	{
 	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
 		break;
 
 	case WM_COMMAND:
@@ -455,6 +458,7 @@ INT_PTR CALLBACK	Statistics_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARA
 	switch (message)
 	{
 	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
 		break;
 
 	case WM_COMMAND:
@@ -490,6 +494,7 @@ INT_PTR CALLBACK	Modify_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 		Note* noteTemp = myNoteBook->GetNoteAt(currentNotePos);
 		SetDlgItemText(hDlg, IDC_MODIFY_CONTENTTXT, noteTemp->GetContent());
 		SetDlgItemText(hDlg, IDC_MODIFY_TAGTXT, noteTemp->GetTagString());
+		return (INT_PTR)TRUE;
 	}
 		break;
 
