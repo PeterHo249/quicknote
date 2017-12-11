@@ -32,12 +32,15 @@
 #include <gdiplus.h>
 #include <ctime>
 #include <shellapi.h>
+#include <Gdiplusgraphics.h>
 
 #include "Note.h"
 #include "Tag.h"
 #include "NoteBook.h"
 #include "QuickNote.h"
 #include "resource.h"
+#include "DrawingInfo.h"
+#include "TagDrawingInfo.h"
 
 using namespace std;
 using namespace Gdiplus;
@@ -52,3 +55,9 @@ using namespace Gdiplus;
 const unsigned short BOM = 0xFEFF;
 
 #define MAX_FILE_PATH 1024
+
+enum LineDirection
+{
+	left,
+	right
+};

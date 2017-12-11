@@ -24,6 +24,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: Place code here.
+	GdiplusStartupInput gdiplusStartupInput;
+	ULONG_PTR           gdiplusToken;
+
+	// Initialize GDI+.
+	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -49,6 +54,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             DispatchMessage(&msg);
         }
     }
+
+	GdiplusShutdown(gdiplusToken);
 
     return (int) msg.wParam;
 }
@@ -458,8 +465,14 @@ INT_PTR CALLBACK	Statistics_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARA
 	switch (message)
 	{
 	case WM_INITDIALOG:
+	{
+		WCHAR* temp = new WCHAR[20];
+		RECT rect;
+		GetWindowRect(hDlg, &rect);
+		wsprintf(temp, L"dai %d, rong %d", rect.right - rect.left, rect.bottom - rect.top);
+		MessageBox(hDlg, temp, NULL, NULL);
 		return (INT_PTR)TRUE;
-		break;
+	}
 
 	case WM_COMMAND:
 	{
