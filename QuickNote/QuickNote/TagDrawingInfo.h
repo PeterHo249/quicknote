@@ -21,7 +21,7 @@ public:
 
 	void SetSize();
 	Color* GetRandomColor();
-	void SetRect(int top, int left);
+	void SetRect(int left, int top);
 	Font* SetFont();
 	void Draw();
 	int GetRank();

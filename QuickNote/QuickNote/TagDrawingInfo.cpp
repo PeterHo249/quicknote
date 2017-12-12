@@ -77,9 +77,9 @@ Color* TagDrawingInfo::GetRandomColor()
 	return new Color(red, green, blue);
 }
 
-void TagDrawingInfo::SetRect(int top, int left)
+void TagDrawingInfo::SetRect(int left, int top)
 {
-	this->boundRect = new RectF(top, left + TOP_OFFSET, this->width, this->height);
+	this->boundRect = new RectF(left, top + TOP_OFFSET, this->width, this->height);
 }
 
 Font* TagDrawingInfo::SetFont()

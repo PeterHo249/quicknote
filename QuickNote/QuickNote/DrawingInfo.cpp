@@ -137,13 +137,13 @@ void DrawingInfo::AssignPosition()
 	for (unsigned int i = 0; i < this->tagInfoList.size(); i++)
 	{
 		int peekLine;
-		int peekX;
-		int peekY;
+		int peekTop;
+		int peekLeft;
 
 		if (i % 2 == 0)
 		{
 			peekLine = lineNumberUp;
-			peekX = (peekLine + 1) * 30;
+			peekTop = (peekLine + 1) * 30;
 			lineNumberUp--;
 			if (lineNumberUp < 0)
 				lineNumberUp = centerLine;
@@ -151,7 +151,7 @@ void DrawingInfo::AssignPosition()
 		else
 		{
 			peekLine = lineNumberDown;
-			peekX = (peekLine + 1) * 30;
+			peekTop = (peekLine + 1) * 30;
 			lineNumberDown++;
 			if (lineNumberDown >= lineCount)
 				lineNumberDown = centerLine + 1;
@@ -160,16 +160,16 @@ void DrawingInfo::AssignPosition()
 		// 0 is left, 1 is right
 		if (centerWidth - offsetOnLine[0][peekLine] < offsetOnLine[1][peekLine] - centerWidth)
 		{
-			peekY = offsetOnLine[0][peekLine] - tagInfoList[i]->GetWidth();
-			offsetOnLine[0][peekLine] = peekY;
+			peekLeft = offsetOnLine[0][peekLine] - tagInfoList[i]->GetWidth();
+			offsetOnLine[0][peekLine] = peekLeft;
 		}
 		else
 		{
-			peekY = offsetOnLine[1][peekLine];
-			offsetOnLine[1][peekLine] = peekY + tagInfoList[i]->GetWidth();
+			peekLeft = offsetOnLine[1][peekLine];
+			offsetOnLine[1][peekLine] = peekLeft + tagInfoList[i]->GetWidth();
 		}
 
-		tagInfoList[i]->SetRect(peekY, peekX);
+		tagInfoList[i]->SetRect(peekLeft, peekTop);
 	}
 }
 
