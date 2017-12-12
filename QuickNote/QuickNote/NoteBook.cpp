@@ -658,3 +658,8 @@ int NoteBook::GetNoteCount()
 {
 	return this->noteCount;
 }
+
+vector<Note*> NoteBook::GetNoteList()
+{
+	return this->noteList;
+}

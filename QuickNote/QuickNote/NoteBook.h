@@ -67,6 +67,8 @@ public:
 	int GetTagCount();
 
 	int GetNoteCount();
+
+	vector<Note*> GetNoteList();
 };
 
 int GetHashCode(WCHAR* string);

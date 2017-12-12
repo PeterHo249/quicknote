@@ -149,7 +149,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		icex.dwICC = ICC_LISTVIEW_CLASSES | ICC_TREEVIEW_CLASSES;
 		InitCommonControlsEx(&icex);
 		srand(time(NULL));
-		//InstallHook(hWnd);
+		InstallHook(hWnd);
 		break;
 	case WM_SYSTRAY:
 	{
@@ -215,7 +215,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_CLOSE:
 		if (myNoteBook != NULL)
 			delete myNoteBook;
-		//UninstallHook(hWnd);
+		UninstallHook(hWnd);
 		Shell_NotifyIcon(NIM_DELETE, &nidApp);
 		PostQuitMessage(0);
 		break;
@@ -260,6 +260,14 @@ INT_PTR CALLBACK	ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 		TreeView_DeleteAllItems(tagTreeView);
 		vector<vector<Tag*>> tagList = myNoteBook->GetTagList();
 
+		TVINSERTSTRUCT allnoteTvItem;
+		allnoteTvItem.hParent = NULL;
+		allnoteTvItem.hInsertAfter = TVI_LAST;
+		allnoteTvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
+		allnoteTvItem.item.pszText = L"All Note";
+		allnoteTvItem.item.lParam = (LPARAM)-1;
+		TreeView_InsertItem(tagTreeView, &allnoteTvItem);
+
 		int index = 0;
 		for (unsigned int i = 0; i < tagList.size(); i++)
 		{
@@ -270,9 +278,7 @@ INT_PTR CALLBACK	ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 				tvItem.hInsertAfter = TVI_LAST;
 				tvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
 				tvItem.item.pszText = tagList[i][j]->GetName();
-				WCHAR* tempStr = new WCHAR[10];
-				wsprintf(tempStr, L"%d", index);
-				tvItem.item.lParam = (LPARAM)tempStr;
+				tvItem.item.lParam = (LPARAM)index;
 				TreeView_InsertItem(tagTreeView, &tvItem);
 				index++;
 			}
@@ -308,23 +314,42 @@ INT_PTR CALLBACK	ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 
 				TVITEM tvItem = pnmtv->itemNew;
 
-				vector<int> noteIndexList = myNoteBook->GetTag(_wtoi((WCHAR*)tvItem.lParam))->GetNoteList();
-
-				for (unsigned int i = 0; i < noteIndexList.size(); i++)
+				if ((int)tvItem.lParam != -1)
 				{
-					Note* pNote = myNoteBook->GetNoteAt(noteIndexList[i]);
-					if (pNote != NULL)
+					vector<int> noteIndexList = myNoteBook->GetTag((int)tvItem.lParam)->GetNoteList();
+
+					for (unsigned int i = 0; i < noteIndexList.size(); i++)
 					{
-						// Add new item to tree view
-						TVINSERTSTRUCT tvItem;
-						tvItem.hParent = NULL;
-						tvItem.hInsertAfter = TVI_LAST;
-						tvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
-						tvItem.item.pszText = pNote->GetPreview();
-						WCHAR* tempStr = new WCHAR[10];
-						wsprintf(tempStr, L"%d", noteIndexList[i]);
-						tvItem.item.lParam = (LPARAM)tempStr;
-						TreeView_InsertItem(noteTreeView, &tvItem);
+						Note* pNote = myNoteBook->GetNoteAt(noteIndexList[i]);
+						if (pNote != NULL)
+						{
+							// Add new item to tree view
+							TVINSERTSTRUCT tvItem;
+							tvItem.hParent = NULL;
+							tvItem.hInsertAfter = TVI_LAST;
+							tvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
+							tvItem.item.pszText = pNote->GetPreview();
+							tvItem.item.lParam = (LPARAM)noteIndexList[i];
+							TreeView_InsertItem(noteTreeView, &tvItem);
+						}
+					}
+				}
+				else
+				{
+					vector<Note*> noteList = myNoteBook->GetNoteList();
+					for (unsigned int i = 0; i < noteList.size(); i++)
+					{
+						if (noteList[i] != NULL)
+						{
+							// Add new item to tree view
+							TVINSERTSTRUCT tvItem;
+							tvItem.hParent = NULL;
+							tvItem.hInsertAfter = TVI_LAST;
+							tvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
+							tvItem.item.pszText = noteList[i]->GetPreview();
+							tvItem.item.lParam = (LPARAM)i;
+							TreeView_InsertItem(noteTreeView, &tvItem);
+						}
 					}
 				}
 			}
@@ -342,8 +367,8 @@ INT_PTR CALLBACK	ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 				// Reload content of note
 				TVITEM tvItem = pnmtv->itemNew;
 
-				Note* pNote = myNoteBook->GetNoteAt(_wtoi((WCHAR*)tvItem.lParam));
-				currentNotePos = _wtoi((WCHAR*)tvItem.lParam);
+				currentNotePos = (int)tvItem.lParam;
+				Note* pNote = myNoteBook->GetNoteAt(currentNotePos);
 
 				if (pNote != NULL)
 				{
@@ -643,6 +668,14 @@ void RefreshView(HWND hDlg)
 	SetDlgItemText(hDlg, IDC_VIEW_TAGTXT, L"");
 
 	vector<vector<Tag*>> tagList = myNoteBook->GetTagList();
+
+	TVINSERTSTRUCT allnoteTvItem;
+	allnoteTvItem.hParent = NULL;
+	allnoteTvItem.hInsertAfter = TVI_LAST;
+	allnoteTvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
+	allnoteTvItem.item.pszText = L"All note";
+	allnoteTvItem.item.lParam = (LPARAM)-1;
+	TreeView_InsertItem(tagTreeView, &allnoteTvItem);
 
 	int index = 0;
 	for (unsigned int i = 0; i < tagList.size(); i++)
