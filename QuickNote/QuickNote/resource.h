@@ -17,7 +17,6 @@
 #define IDD_VIEWNOTE                    129
 #define IDD_ADDNOTE                     130
 #define IDD_STATISTICS                  131
-#define IDD_ADDNOTE1                    132
 #define IDD_MODIFY                      132
 #define IDI_SYSTRAYICON                 133
 #define IDS_SYSTRAYTOOLTIP              900
@@ -42,6 +41,8 @@
 #define IDC_MODIFY_CANCEL               1018
 #define IDC_MODIFY_ERROR_CONTENT        1019
 #define IDC_MODIFY_ERROR_TAG            1020
+#define IDC_STAT_TAGCOUNT               1021
+#define IDC_STAT_NOTECOUNT              1022
 #define ID_FILE_VIEWNOTE                32772
 #define ID_FILE_ADDNOTE                 32773
 #define ID_FILE_STATISTICS              32774
@@ -57,7 +58,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        134
 #define _APS_NEXT_COMMAND_VALUE         32778
-#define _APS_NEXT_CONTROL_VALUE         1021
+#define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           118
 #endif
 #endif

@@ -148,7 +148,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
 		icex.dwICC = ICC_LISTVIEW_CLASSES | ICC_TREEVIEW_CLASSES;
 		InitCommonControlsEx(&icex);
-		InstallHook(hWnd);
+		srand(time(NULL));
+		//InstallHook(hWnd);
 		break;
 	case WM_SYSTRAY:
 	{
@@ -214,7 +215,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_CLOSE:
 		if (myNoteBook != NULL)
 			delete myNoteBook;
-		UninstallHook(hWnd);
+		//UninstallHook(hWnd);
 		Shell_NotifyIcon(NIM_DELETE, &nidApp);
 		PostQuitMessage(0);
 		break;
@@ -462,17 +463,39 @@ INT_PTR CALLBACK	Statistics_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARA
 {
 	UNREFERENCED_PARAMETER(lParam);
 
+	DrawingInfo* drawingInfo = NULL;
+
 	switch (message)
 	{
 	case WM_INITDIALOG:
 	{
-		WCHAR* temp = new WCHAR[20];
-		RECT rect;
-		GetWindowRect(hDlg, &rect);
-		wsprintf(temp, L"dai %d, rong %d", rect.right - rect.left, rect.bottom - rect.top);
-		MessageBox(hDlg, temp, NULL, NULL);
+		WCHAR tempStr[100];
+		wsprintf(tempStr, L"Number of tag: %d", myNoteBook->GetTagCount());
+		SetDlgItemText(hDlg, IDC_STAT_TAGCOUNT, tempStr);
+		wsprintf(tempStr, L"Number of note: %d", myNoteBook->GetNoteCount());
+		SetDlgItemText(hDlg, IDC_STAT_NOTECOUNT, tempStr);
+		InvalidateRect(hDlg, NULL, TRUE);
 		return (INT_PTR)TRUE;
 	}
+
+	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hDlg, &ps);
+		// TODO: Add any drawing code that uses hdc here...
+		RECT rect;
+		GetWindowRect(hDlg, &rect);
+		drawingInfo = new DrawingInfo(hdc, myNoteBook, 400, 700);
+		drawingInfo->Draw();
+		if (drawingInfo != NULL)
+		{
+			delete drawingInfo;
+			drawingInfo = NULL;
+		}
+
+		EndPaint(hDlg, &ps);
+	}
+		break;
 
 	case WM_COMMAND:
 	{
@@ -480,6 +503,11 @@ INT_PTR CALLBACK	Statistics_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARA
 		switch (id)
 		{
 		case IDC_STAT_EXIT:
+			if (drawingInfo != NULL)
+			{
+				delete drawingInfo;
+				drawingInfo = NULL;
+			}
 			EndDialog(hDlg, true);
 			break;
 		default:
@@ -489,6 +517,11 @@ INT_PTR CALLBACK	Statistics_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARA
 	break;
 
 	case WM_CLOSE:
+		if (drawingInfo != NULL)
+		{
+			delete drawingInfo;
+			drawingInfo = NULL;
+		}
 		EndDialog(hDlg, true);
 		break;
 	}

@@ -61,32 +61,31 @@ void TagDrawingInfo::SetSize()
 	stringFormat.SetAlignment(StringAlignmentCenter);
 	RectF rect;
 
-	graphics.MeasureString(this->name, -1, this->font, origin, &rect);
+	graphics.MeasureString(this->name, wcslen(this->name) + 1, this->font, origin, &rect);
 	
 	SizeF size;
 	rect.GetSize(&size);
 	height = size.Height;
-	width = size.Width;
+	width = size.Width + 5;
 }
 
 Color* TagDrawingInfo::GetRandomColor()
 {
-	srand(time(NULL));
 	int red = rand() % 255;
 	int blue = rand() % 255;
 	int green = rand() % 255;
 	return new Color(red, green, blue);
 }
 
-RectF* TagDrawingInfo::SetRect(int top, int left)
+void TagDrawingInfo::SetRect(int top, int left)
 {
-	return new RectF(top, left, this->width, this->height);
+	this->boundRect = new RectF(top, left + TOP_OFFSET, this->width, this->height);
 }
 
 Font* TagDrawingInfo::SetFont()
 {
 	FontFamily* fontFamily = new FontFamily(L"Arial");
-	Font* font;
+	Font* font = NULL;
 	switch (this->rank)
 	{
 	case 1:
@@ -103,4 +102,26 @@ Font* TagDrawingInfo::SetFont()
 		break;
 	}
 	return font;
+}
+
+void TagDrawingInfo::Draw()
+{
+	Graphics graphics(this->hdc);
+
+	graphics.SetSmoothingMode(SmoothingModeAntiAlias);
+
+	StringFormat stringFormat;
+	stringFormat.SetAlignment(StringAlignmentCenter);
+	SolidBrush brush(*color);
+	graphics.DrawString(this->name, wcslen(this->name) + 1, font, *boundRect, &stringFormat, &brush);
+}
+
+int TagDrawingInfo::GetRank()
+{
+	return this->rank;
+}
+
+int TagDrawingInfo::GetWidth()
+{
+	return this->width;
 }

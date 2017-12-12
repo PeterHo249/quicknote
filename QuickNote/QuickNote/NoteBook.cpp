@@ -648,3 +648,13 @@ void NoteBook::DeleteNoteAt(int pos)
 	Note* noteTemp = GetNoteAt(pos);
 	this->DeteleNote(noteTemp);
 }
+
+int NoteBook::GetTagCount()
+{
+	return this->tagCount;
+}
+
+int NoteBook::GetNoteCount()
+{
+	return this->noteCount;
+}

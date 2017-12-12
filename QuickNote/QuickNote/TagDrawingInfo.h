@@ -21,7 +21,10 @@ public:
 
 	void SetSize();
 	Color* GetRandomColor();
-	RectF* SetRect(int top, int left);
+	void SetRect(int top, int left);
 	Font* SetFont();
+	void Draw();
+	int GetRank();
+	int GetWidth();
 };
 

@@ -63,6 +63,10 @@ public:
 	Tag* GetTag(int pos);
 
 	void DeleteNoteAt(int pos);
+
+	int GetTagCount();
+
+	int GetNoteCount();
 };
 
 int GetHashCode(WCHAR* string);
