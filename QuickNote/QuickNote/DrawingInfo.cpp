@@ -6,7 +6,6 @@ DrawingInfo::DrawingInfo()
 {
 }
 
-
 DrawingInfo::~DrawingInfo()
 {
 	for (unsigned int i = 0; i < tagInfoList.size(); i++)
@@ -18,13 +17,6 @@ DrawingInfo::~DrawingInfo()
 		}
 	}
 }
-
-//HDC hdc;
-//int lineCount;
-//int lineLength;
-//vector<TagDrawingInfo*> tagInfoList;
-//int windowHeight;
-//int windowWidth;
 
 DrawingInfo::DrawingInfo(HDC hdc, NoteBook* noteBook, int windowsHeight, int windowWidth)
 {
@@ -112,67 +104,6 @@ void DrawingInfo::ComputeLineParameter()
 	}
 }
 
-void DrawingInfo::AssignPosition()
-{
-	int centerHeight = this->windowHeight / 2;
-	int centerWidth = this->windowWidth / 2;
-
-	int centerLine = lineCount / 2;
-
-	// Initial value
-	vector<vector<int>> offsetOnLine;
-	for (int i = 0; i < 2; i++)
-	{
-		vector<int> temp;
-		offsetOnLine.push_back(temp);
-		for (int j = 0; j < lineCount; j++)
-		{
-			offsetOnLine[i].push_back(centerWidth);
-		}
-	}
-
-	int lineNumberUp = centerLine;
-	int lineNumberDown = centerLine + 1;
-
-	for (unsigned int i = 0; i < this->tagInfoList.size(); i++)
-	{
-		int peekLine;
-		int peekTop;
-		int peekLeft;
-
-		if (i % 2 == 0)
-		{
-			peekLine = lineNumberUp;
-			peekTop = (peekLine + 1) * 30;
-			lineNumberUp--;
-			if (lineNumberUp < 0)
-				lineNumberUp = centerLine;
-		}
-		else
-		{
-			peekLine = lineNumberDown;
-			peekTop = (peekLine + 1) * 30;
-			lineNumberDown++;
-			if (lineNumberDown >= lineCount)
-				lineNumberDown = centerLine + 1;
-		}
-
-		// 0 is left, 1 is right
-		if (centerWidth - offsetOnLine[0][peekLine] < offsetOnLine[1][peekLine] - centerWidth)
-		{
-			peekLeft = offsetOnLine[0][peekLine] - tagInfoList[i]->GetWidth();
-			offsetOnLine[0][peekLine] = peekLeft;
-		}
-		else
-		{
-			peekLeft = offsetOnLine[1][peekLine];
-			offsetOnLine[1][peekLine] = peekLeft + tagInfoList[i]->GetWidth();
-		}
-
-		tagInfoList[i]->SetRect(peekLeft, peekTop);
-	}
-}
-
 void DrawingInfo::SortTagInfoList()
 {
 	int size = this->tagInfoList.size();
@@ -191,5 +122,81 @@ void DrawingInfo::SortTagInfoList()
 				tagInfoList[j] = temp;
 			}
 		}
+	}
+}
+
+void DrawingInfo::AssignPosition()
+{
+	if (this->tagInfoList.size() == 0)
+		return;
+
+	int tempLeft, tempTop, tempRight, tempBottom;
+
+	int currentDirection;
+
+	RectF* lastRect = NULL;
+	Graphics graphics(this->hdc);
+
+	// Assign for item 0
+	tempLeft = 350;
+	tempTop = 250;
+	tempRight = tempLeft + this->tagInfoList[0]->GetWidth();
+	tempBottom = tempTop + this->tagInfoList[0]->GetHeight();
+	currentDirection = topMove;
+	this->tagInfoList[0]->SetRect(tempLeft, tempTop);
+	lastRect = this->tagInfoList[0]->GetRect();
+
+	for (unsigned int i = 1; i < this->tagInfoList.size(); i++)
+	{
+		bool changeDirection = false;
+
+		int top = 0;
+		int left = 0;
+
+		switch (currentDirection)
+		{
+		case topMove:
+			left = lastRect->GetRight() - this->tagInfoList[i]->GetWidth();
+			top = lastRect->GetTop() - this->tagInfoList[i]->GetHeight() - 3;
+			if (top + this->tagInfoList[i]->GetHeight() < tempTop)
+			{
+				changeDirection = true;
+				tempTop = top;
+			}
+			break;
+		case rightMove:
+			left = lastRect->GetRight() + 3;
+			top = lastRect->GetTop();
+			if (left > tempRight)
+			{
+				changeDirection = true;
+				tempRight = left + this->tagInfoList[i]->GetWidth();
+			}
+			break;
+		case bottomMove:
+			left = lastRect->GetLeft();
+			top = lastRect->GetBottom() + 3;
+			if (top > tempBottom)
+			{
+				changeDirection = true;
+				tempBottom = top + this->tagInfoList[i]->GetHeight();
+			}
+			break;
+		case leftMove:
+			left = lastRect->GetLeft() - this->tagInfoList[i]->GetWidth() - 6;
+			top = lastRect->GetTop();
+			if (left + this->tagInfoList[i]->GetWidth() < tempLeft)
+			{
+				changeDirection = true;
+				tempLeft = left;
+			}
+			break;
+		}
+
+		this->tagInfoList[i]->SetRect(left, top);
+		lastRect = this->tagInfoList[i]->GetRect();
+
+		if (changeDirection)
+			currentDirection = (currentDirection + 1) % 4;
 	}
 }

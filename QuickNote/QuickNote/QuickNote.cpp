@@ -163,6 +163,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			InsertMenu(hMenu, -1, uFlag, IDM_ADDNOTE, L"Add new note...");
 			InsertMenu(hMenu, -1, uFlag, IDM_VIEWNOTE, L"View note list...");
 			InsertMenu(hMenu, -1, uFlag, IDM_STATISTICS, L"Statistics...");
+			InsertMenu(hMenu, -1, MF_BYPOSITION | MF_SEPARATOR, NULL, NULL);
 			InsertMenu(hMenu, -1, uFlag, IDM_EXIT, L"Exit");
 			SetForegroundWindow(hWnd);
 			TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_BOTTOMALIGN,

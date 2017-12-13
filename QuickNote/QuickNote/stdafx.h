@@ -58,3 +58,11 @@ const unsigned short BOM = 0xFEFF;
 #define MAX_FILE_PATH 1024
 #define MAX_LOADSTRING 512
 #define TOP_OFFSET 50
+
+enum Direction
+{
+	topMove,
+	rightMove,
+	bottomMove,
+	leftMove
+};

@@ -79,7 +79,7 @@ Color* TagDrawingInfo::GetRandomColor()
 
 void TagDrawingInfo::SetRect(int left, int top)
 {
-	this->boundRect = new RectF(left, top + TOP_OFFSET, this->width, this->height);
+	this->boundRect = new RectF(left, top /*+ TOP_OFFSET*/, this->width, this->height);
 }
 
 Font* TagDrawingInfo::SetFont()
@@ -89,16 +89,16 @@ Font* TagDrawingInfo::SetFont()
 	switch (this->rank)
 	{
 	case 1:
-		font = new Font(fontFamily, 12, FontStyleRegular, UnitPixel);
+		font = new Font(fontFamily, 19, FontStyleRegular, UnitPixel);
 		break;
 	case 2:
-		font = new Font(fontFamily, 16, FontStyleRegular, UnitPixel);
+		font = new Font(fontFamily, 26, FontStyleRegular, UnitPixel);
 		break;
 	case 3:
-		font = new Font(fontFamily, 20, FontStyleRegular, UnitPixel);
+		font = new Font(fontFamily, 33, FontStyleRegular, UnitPixel);
 		break;
 	case 4:
-		font = new Font(fontFamily, 24, FontStyleRegular, UnitPixel);
+		font = new Font(fontFamily, 40, FontStyleRegular, UnitPixel);
 		break;
 	}
 	return font;
@@ -124,4 +124,14 @@ int TagDrawingInfo::GetRank()
 int TagDrawingInfo::GetWidth()
 {
 	return this->width;
+}
+
+RectF* TagDrawingInfo::GetRect()
+{
+	return this->boundRect;
+}
+
+int TagDrawingInfo::GetHeight()
+{
+	return this->height;
 }
