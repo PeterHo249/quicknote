@@ -62,10 +62,15 @@ WCHAR* Note::GeneratePreviewNote()
 	WCHAR* buffer = new WCHAR[21];
 	ZeroMemory(buffer, 21 * sizeof(WCHAR));
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 17; i++)
 	{
+		if (this->content[i] == 0)
+			break;
+
 		buffer[i] = this->content[i];
 	}
+
+	wsprintf(buffer, L"%s...", buffer);
 
 	return buffer;
 }

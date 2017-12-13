@@ -54,10 +54,7 @@ using namespace Gdiplus;
 // BOM of UTF-16 file
 const unsigned short BOM = 0xFEFF;
 
+// Define some contant
 #define MAX_FILE_PATH 1024
-
-enum LineDirection
-{
-	left,
-	right
-};
+#define MAX_LOADSTRING 512
+#define TOP_OFFSET 50

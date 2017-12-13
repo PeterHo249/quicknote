@@ -1,9 +1,6 @@
 #pragma once
 #include "stdafx.h"
-
 #include "resource.h"
-
-#define MAX_LOADSTRING 255
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
