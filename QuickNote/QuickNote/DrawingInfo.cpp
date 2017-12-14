@@ -18,13 +18,10 @@ DrawingInfo::~DrawingInfo()
 	}
 }
 
-DrawingInfo::DrawingInfo(HDC hdc, NoteBook* noteBook, int windowsHeight, int windowWidth)
+DrawingInfo::DrawingInfo(HDC hdc, NoteBook* noteBook)
 {
-	this->windowHeight = windowsHeight;
-	this->windowWidth = windowWidth;
 	this->hdc = hdc;
 	GetData(noteBook);
-	ComputeLineParameter();
 	AssignPosition();
 }
 
@@ -53,25 +50,9 @@ void DrawingInfo::GetData(NoteBook* noteBook)
 			ZeroMemory(inputName, (length + 1) * sizeof(WCHAR));
 			wcscpy_s(inputName, length + 1, temp);
 
-			int rank = 0;
 			float ratio = (float)data[i][j]->GetNoteList().size() / noteBook->GetTagCount();
-
-			if (ratio >= 0.75f)
-				rank = 4;
-			else
-			{
-				if (ratio >= 0.5f)
-					rank = 3;
-				else
-				{
-					if (ratio >= 0.25f)
-						rank = 2;
-					else
-						rank = 1;
-				}
-			}
-
-			tagInfoList.push_back(new TagDrawingInfo(this->hdc, inputName, rank));
+			
+			tagInfoList.push_back(new TagDrawingInfo(this->hdc, inputName, (int)(ratio * 100)));
 		}
 	}
 
@@ -84,23 +65,6 @@ void DrawingInfo::GetData(NoteBook* noteBook)
 			delete tagInfoList[tagInfoList.size() - 1];
 
 		tagInfoList.pop_back();
-	}
-}
-
-void DrawingInfo::ComputeLineParameter()
-{
-	int totalLength = 0;
-
-	for (unsigned int i = 0; i < tagInfoList.size(); i++)
-		totalLength += tagInfoList[i]->GetWidth();
-
-	lineLength = windowWidth - 40;
-	lineCount = totalLength / lineLength;
-	
-	if (lineCount < 10)
-	{
-		lineCount = 10;
-		lineLength = totalLength / lineCount;
 	}
 }
 
@@ -172,6 +136,13 @@ void DrawingInfo::AssignPosition()
 				changeDirection = true;
 				tempRight = left + this->tagInfoList[i]->GetWidth();
 			}
+			else
+			{
+				if (left + this->tagInfoList[i]->GetWidth() > tempRight)
+				{
+					tempRight = left + this->tagInfoList[i]->GetWidth();
+				}
+			}
 			break;
 		case bottomMove:
 			left = lastRect->GetLeft();
@@ -189,6 +160,13 @@ void DrawingInfo::AssignPosition()
 			{
 				changeDirection = true;
 				tempLeft = left;
+			}
+			else
+			{
+				if (left < tempLeft)
+				{
+					tempLeft = left;
+				}
 			}
 			break;
 		}

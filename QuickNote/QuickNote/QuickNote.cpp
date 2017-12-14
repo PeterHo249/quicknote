@@ -511,7 +511,7 @@ INT_PTR CALLBACK	Statistics_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARA
 		// TODO: Add any drawing code that uses hdc here...
 		RECT rect;
 		GetWindowRect(hDlg, &rect);
-		drawingInfo = new DrawingInfo(hdc, myNoteBook, 400, 700);
+		drawingInfo = new DrawingInfo(hdc, myNoteBook);
 		drawingInfo->Draw();
 		if (drawingInfo != NULL)
 		{

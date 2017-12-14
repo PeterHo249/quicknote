@@ -79,28 +79,18 @@ Color* TagDrawingInfo::GetRandomColor()
 
 void TagDrawingInfo::SetRect(int left, int top)
 {
-	this->boundRect = new RectF(left, top /*+ TOP_OFFSET*/, this->width, this->height);
+	this->boundRect = new RectF(left, top, this->width, this->height);
 }
 
 Font* TagDrawingInfo::SetFont()
 {
 	FontFamily* fontFamily = new FontFamily(L"Arial");
 	Font* font = NULL;
-	switch (this->rank)
-	{
-	case 1:
-		font = new Font(fontFamily, 19, FontStyleRegular, UnitPixel);
-		break;
-	case 2:
-		font = new Font(fontFamily, 26, FontStyleRegular, UnitPixel);
-		break;
-	case 3:
-		font = new Font(fontFamily, 33, FontStyleRegular, UnitPixel);
-		break;
-	case 4:
-		font = new Font(fontFamily, 40, FontStyleRegular, UnitPixel);
-		break;
-	}
+
+	int size = this->rank + 10;
+
+	font = new Font(fontFamily, size, FontStyleBold, UnitPixel);
+
 	return font;
 }
 

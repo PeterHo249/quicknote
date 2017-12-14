@@ -26,6 +26,7 @@ private:
 	void SetSize();
 	// Create a random color for tag drawing
 	Color* GetRandomColor();
+
 public:
 	TagDrawingInfo();
 	TagDrawingInfo(HDC hdc, WCHAR* name, int rank);
