@@ -18,6 +18,8 @@ NoteBook::NoteBook()
 
 NoteBook::~NoteBook()
 {
+	CleanUpTagList();
+
 	if (this->tagCount != 0 || this->noteCount != 0)
 		WriteDataToFile();
 
@@ -662,4 +664,21 @@ int NoteBook::GetNoteCount()
 vector<Note*> NoteBook::GetNoteList()
 {
 	return this->noteList;
+}
+
+void NoteBook::CleanUpTagList()
+{
+	for (unsigned int i = 0; i < this->tagHashTable.size(); i++)
+	{
+		for (unsigned int j = 0; j < this->tagHashTable[i].size(); j++)
+		{
+			if (this->tagHashTable[i][j]->GetNoteList().size() == 0)
+			{
+				delete this->tagHashTable[i][j];
+				tagHashTable[i].erase(tagHashTable[i].begin() + j);
+				j--;
+				tagCount--;
+			}
+		}
+	}
 }

@@ -12,10 +12,6 @@ private:
 	vector<int> blankPos;
 	WCHAR* dataPath;
 
-public:
-	NoteBook();
-	~NoteBook();
-
 	//==========================================================================
 
 	// Data file business function
@@ -30,6 +26,13 @@ public:
 	bool ReadDataFromFile();
 	// Check the data file is new
 	bool IsCreateNewDataFile();
+
+	// Clean up tag list
+	void CleanUpTagList();
+
+public:
+	NoteBook();
+	~NoteBook();
 
 	//==========================================================================
 
