@@ -7,7 +7,7 @@ Note::Note()
 	this->previewNote = NULL;
 	this->tagString = NULL;
 }
-
+//******************************************************************************
 Note::Note(WCHAR* content, WCHAR* tagString)
 {
 	this->date = GetCurrentDate();
@@ -16,7 +16,7 @@ Note::Note(WCHAR* content, WCHAR* tagString)
 	StandardizeTagString();
 	this->previewNote = GeneratePreviewNote();
 }
-
+//******************************************************************************
 Note::Note(WCHAR* date, WCHAR* content, WCHAR* tagstring)
 {
 	this->date = date;
@@ -25,7 +25,7 @@ Note::Note(WCHAR* date, WCHAR* content, WCHAR* tagstring)
 	StandardizeTagString();
 	this->previewNote = GeneratePreviewNote();
 }
-
+//******************************************************************************
 Note::~Note()
 {
 	if (date != NULL)
@@ -41,22 +41,8 @@ Note::~Note()
 		delete[] tagString;
 }
 
-// Get current date (format dd/MM/yyyy)
-WCHAR* Note::GetCurrentDate()
-{
-	time_t current_time = time(NULL);
-	tm time_ptr;
+//==============================================================================
 
-	localtime_s(&time_ptr, &current_time);
-
-	WCHAR* buffer = new WCHAR[15];
-	ZeroMemory(buffer, 15 * sizeof(WCHAR));
-	wsprintf(buffer, L"%d/%d/%d", time_ptr.tm_mday, time_ptr.tm_mon + 1, time_ptr.tm_year + 1900);
-
-	return buffer;
-}
-
-// Generate preview from content
 WCHAR* Note::GeneratePreviewNote()
 {
 	WCHAR* buffer = new WCHAR[21];
@@ -75,13 +61,51 @@ WCHAR* Note::GeneratePreviewNote()
 	return buffer;
 }
 
-// Standardize tag string
+//==============================================================================
+
+WCHAR* Note::GetCurrentDate()
+{
+	time_t current_time = time(NULL);
+	tm time_ptr;
+
+	localtime_s(&time_ptr, &current_time);
+
+	WCHAR* buffer = new WCHAR[15];
+	ZeroMemory(buffer, 15 * sizeof(WCHAR));
+	wsprintf(buffer, L"%d/%d/%d", 
+		time_ptr.tm_mday, time_ptr.tm_mon + 1, time_ptr.tm_year + 1900);
+
+	return buffer;
+}
+//******************************************************************************
+WCHAR* Note::GetDate()
+{
+	return this->date;
+}
+//******************************************************************************
+WCHAR* Note::GetContent()
+{
+	return this->content;
+}
+//******************************************************************************
+WCHAR* Note::GetTagString()
+{
+	return this->tagString;
+}
+//******************************************************************************
+WCHAR* Note::GetPreview()
+{
+	return this->previewNote;
+}
+
+//==============================================================================
+
 void Note::StandardizeTagString()
 {
 	int length = wcslen(this->tagString);
 	WCHAR* newtagString = new WCHAR[length + 1];
-	ZeroMemory(newtagString, (length + 1 )* sizeof(WCHAR));
-	
+	ZeroMemory(newtagString, (length + 1) * sizeof(WCHAR));
+
 	int newtagIndex = 0;
 	bool validFlag = false;
 	for (int i = 0; i < length; i++)
@@ -104,25 +128,4 @@ void Note::StandardizeTagString()
 
 	delete[] this->tagString;
 	this->tagString = newtagString;
-}
-
-// Get
-WCHAR* Note::GetDate()
-{
-	return this->date;
-}
-
-WCHAR* Note::GetContent()
-{
-	return this->content;
-}
-
-WCHAR* Note::GetTagString()
-{
-	return this->tagString;
-}
-
-WCHAR* Note::GetPreview()
-{
-	return this->previewNote;
 }

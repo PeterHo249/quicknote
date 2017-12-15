@@ -6,14 +6,14 @@ Tag::Tag()
 	this->hashCode = 0;
 	this->noteIndexList.clear();
 }
-
+//******************************************************************************
 Tag::Tag(WCHAR* name)
 {
 	this->name = name;
 	this->hashCode = ComputeHashCode();
 	this->noteIndexList.clear();
 }
-
+//******************************************************************************
 Tag::Tag(WCHAR* name, WCHAR* notelist, int hashcode)
 {
 	this->name = name;
@@ -40,7 +40,7 @@ Tag::Tag(WCHAR* name, WCHAR* notelist, int hashcode)
 	}
 	this->noteIndexList.push_back(_wtoi(numString));
 }
-
+//******************************************************************************
 Tag::~Tag()
 {
 	if (this->name != NULL)
@@ -49,13 +49,13 @@ Tag::~Tag()
 	this->noteIndexList.clear();
 }
 
-// Add note index
+//==============================================================================
+
 void Tag::AddNoteIndex(int noteIndex)
 {
 	this->noteIndexList.push_back(noteIndex);
 }
-
-// Delete note index
+//******************************************************************************
 void Tag::DeleteNoteIndex(int noteIndex)
 {
 	for (unsigned int i = 0; i < this->noteIndexList.size(); i++)
@@ -64,8 +64,7 @@ void Tag::DeleteNoteIndex(int noteIndex)
 			this->noteIndexList.erase(this->noteIndexList.begin() + i);
 	}
 }
-
-// Compute hash code
+//******************************************************************************
 int Tag::ComputeHashCode()
 {
 	int code = 0;
@@ -75,14 +74,7 @@ int Tag::ComputeHashCode()
 	}
 	return code % 131;
 }
-
-// Get hash code
-int Tag::GetHashCode()
-{
-	return hashCode;
-}
-
-// Convert noteIndexList to string
+//******************************************************************************
 WCHAR* Tag::ConvertIndexListToString()
 {
 	int length = this->noteIndexList.size();
@@ -107,23 +99,29 @@ WCHAR* Tag::ConvertIndexListToString()
 	return buffer;
 }
 
-// Get
+//==============================================================================
+
 WCHAR* Tag::GetName()
 {
 	return this->name;
 }
-
+//******************************************************************************
 WCHAR* Tag::GetNoteIndexString()
 {
 	return ConvertIndexListToString();
 }
-
+//******************************************************************************
 vector<int> Tag::GetNoteList()
 {
 	return this->noteIndexList;
 }
-
+//******************************************************************************
 Tag* Tag::GetAddress()
 {
 	return this;
+}
+//******************************************************************************
+int Tag::GetHashCode()
+{
+	return hashCode;
 }

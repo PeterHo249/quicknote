@@ -15,7 +15,7 @@ NoteBook::NoteBook()
 	if (!IsCreateNewDataFile())
 		ReadDataFromFile();
 }
-
+//******************************************************************************
 NoteBook::~NoteBook()
 {
 	CleanUpTagList();
@@ -62,7 +62,8 @@ NoteBook::~NoteBook()
 	}
 }
 
-// Get path of data file
+//==============================================================================
+
 WCHAR* NoteBook::GetDataFilePath()
 {
 	WCHAR* filePath = new WCHAR[MAX_FILE_PATH];
@@ -70,8 +71,7 @@ WCHAR* NoteBook::GetDataFilePath()
 	StrCat(filePath, L"\\data.ini");
 	return filePath;
 }
-
-// Initial data file
+//******************************************************************************
 bool NoteBook::InitDataFile()
 {
 	DWORD byteWrittenCount;
@@ -79,7 +79,8 @@ bool NoteBook::InitDataFile()
 	{
 		if (!PathFileExists(this->dataPath))
 		{
-			HANDLE fileHandle = CreateFile(this->dataPath, GENERIC_READ | GENERIC_WRITE,
+			HANDLE fileHandle = CreateFile(this->dataPath, 
+				GENERIC_READ | GENERIC_WRITE,
 				0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
 			WriteFile(fileHandle, &BOM, sizeof(BOM), &byteWrittenCount, NULL);
 			CloseHandle(fileHandle);
@@ -88,7 +89,7 @@ bool NoteBook::InitDataFile()
 	}
 	return false;
 }
-
+//******************************************************************************
 // Data file format
 /*
 
@@ -110,7 +111,6 @@ tagstring=
 
 */
 
-// Write data to file
 bool NoteBook::WriteDataToFile()
 {
 	WCHAR tempString[MAX_LOADSTRING];
@@ -143,9 +143,11 @@ bool NoteBook::WriteDataToFile()
 		}
 	}
 	if (blankPosSize == 0)
-		WritePrivateProfileString(L"notebook", L"blankpos", L"", dataPath);
+		WritePrivateProfileString(L"notebook", L"blankpos", 
+			L"", dataPath);
 	else
-		WritePrivateProfileString(L"notebook", L"blankpos", blankPosString, dataPath);
+		WritePrivateProfileString(L"notebook", L"blankpos", 
+			blankPosString, dataPath);
 	if (blankPosString != NULL)
 	{
 		delete[] blankPosString;
@@ -164,11 +166,14 @@ bool NoteBook::WriteDataToFile()
 				ZeroMemory(tagSection, MAX_LOADSTRING * sizeof(WCHAR));
 				wsprintf(tagSection, L"tag%d", tagNum);
 
-				WritePrivateProfileString(tagSection, L"name", tagHashTable[i][j]->GetName(), dataPath);
-				WritePrivateProfileString(tagSection, L"notelist", tagHashTable[i][j]->GetNoteIndexString(), dataPath);
+				WritePrivateProfileString(tagSection, L"name", 
+					tagHashTable[i][j]->GetName(), dataPath);
+				WritePrivateProfileString(tagSection, L"notelist", 
+					tagHashTable[i][j]->GetNoteIndexString(), dataPath);
 				ZeroMemory(tempString, MAX_LOADSTRING * sizeof(WCHAR));
 				wsprintf(tempString, L"%d", tagHashTable[i][j]->GetHashCode());
-				WritePrivateProfileString(tagSection, L"hashcode", tempString, dataPath);
+				WritePrivateProfileString(tagSection, L"hashcode", 
+					tempString, dataPath);
 
 				tagNum++;
 			}
@@ -190,9 +195,12 @@ bool NoteBook::WriteDataToFile()
 
 		if (noteList[i] != NULL)
 		{
-			WritePrivateProfileString(noteSection, L"date", noteList[i]->GetDate(), dataPath);
-			WritePrivateProfileString(noteSection, L"content", noteList[i]->GetContent(), dataPath);
-			WritePrivateProfileString(noteSection, L"tagstring", noteList[i]->GetTagString(), dataPath);
+			WritePrivateProfileString(noteSection, L"date", 
+				noteList[i]->GetDate(), dataPath);
+			WritePrivateProfileString(noteSection, L"content", 
+				noteList[i]->GetContent(), dataPath);
+			WritePrivateProfileString(noteSection, L"tagstring", 
+				noteList[i]->GetTagString(), dataPath);
 		}
 		else
 		{
@@ -209,8 +217,7 @@ bool NoteBook::WriteDataToFile()
 
 	return true;
 }
-
-// Read data from file
+//******************************************************************************
 bool NoteBook::ReadDataFromFile()
 {
 	WCHAR* tempString = NULL;
@@ -219,7 +226,8 @@ bool NoteBook::ReadDataFromFile()
 	tempString = new WCHAR[5];
 	ZeroMemory(tempString, 5 * sizeof(WCHAR));
 	// Tag count
-	GetPrivateProfileString(L"notebook", L"tagcount", L"", tempString, 5, dataPath);
+	GetPrivateProfileString(L"notebook", L"tagcount", 
+		L"", tempString, 5, dataPath);
 	if (wcslen(tempString) != 0)
 		this->tagCount = _wtoi(tempString);
 	else
@@ -227,14 +235,16 @@ bool NoteBook::ReadDataFromFile()
 
 	// Note count
 	ZeroMemory(tempString, 5 * sizeof(WCHAR));
-	GetPrivateProfileString(L"notebook", L"notecount", L"", tempString, 5, dataPath);
+	GetPrivateProfileString(L"notebook", L"notecount", 
+		L"", tempString, 5, dataPath);
 	if (wcslen(tempString) != 0)
 		this->noteCount = _wtoi(tempString);
 
 	// note total
 	int totalnote = 0;
 	ZeroMemory(tempString, 5 * sizeof(WCHAR));
-	GetPrivateProfileString(L"notebook", L"totalnote", L"", tempString, 5, dataPath);
+	GetPrivateProfileString(L"notebook", L"totalnote", 
+		L"", tempString, 5, dataPath);
 	if (wcslen(tempString) != 0)
 		totalnote = _wtoi(tempString);
 
@@ -247,7 +257,8 @@ bool NoteBook::ReadDataFromFile()
 	// Blank pos
 	tempString = new WCHAR[MAX_LOADSTRING];
 	ZeroMemory(tempString, MAX_LOADSTRING * sizeof(WCHAR));
-	GetPrivateProfileString(L"notebook", L"blankpos", L"", tempString, MAX_LOADSTRING, dataPath);
+	GetPrivateProfileString(L"notebook", L"blankpos", 
+		L"", tempString, MAX_LOADSTRING, dataPath);
 	if (wcslen(tempString) != 0)
 	{
 		this->blankPos.clear();
@@ -287,7 +298,8 @@ bool NoteBook::ReadDataFromFile()
 		// Name
 		WCHAR* nameString = new WCHAR[MAX_LOADSTRING];
 		ZeroMemory(nameString, MAX_LOADSTRING * sizeof(WCHAR));
-		GetPrivateProfileString(tagSection, L"name", L"", nameString, MAX_LOADSTRING, dataPath);
+		GetPrivateProfileString(tagSection, L"name", 
+			L"", nameString, MAX_LOADSTRING, dataPath);
 		if (wcslen(nameString) == 0)
 		{
 			if (nameString != NULL)
@@ -301,7 +313,8 @@ bool NoteBook::ReadDataFromFile()
 		//note list
 		WCHAR* noteString = new WCHAR[MAX_LOADSTRING];
 		ZeroMemory(noteString, MAX_LOADSTRING * sizeof(WCHAR));
-		GetPrivateProfileString(tagSection, L"notelist", L"", noteString, MAX_LOADSTRING, dataPath);
+		GetPrivateProfileString(tagSection, L"notelist", 
+			L"", noteString, MAX_LOADSTRING, dataPath);
 		if (wcslen(noteString) == 0)
 		{
 			if (noteString != NULL)
@@ -315,7 +328,8 @@ bool NoteBook::ReadDataFromFile()
 		// hash code
 		WCHAR* codeString = new WCHAR[MAX_LOADSTRING];
 		ZeroMemory(codeString, MAX_LOADSTRING * sizeof(WCHAR));
-		GetPrivateProfileString(tagSection, L"hashcode", L"", codeString, MAX_LOADSTRING, dataPath);
+		GetPrivateProfileString(tagSection, L"hashcode", 
+			L"", codeString, MAX_LOADSTRING, dataPath);
 		if (wcslen(codeString) == 0)
 		{
 			if (codeString != NULL)
@@ -342,19 +356,23 @@ bool NoteBook::ReadDataFromFile()
 		// date
 		WCHAR* dateString = new WCHAR[20];
 		ZeroMemory(dateString, 20 * sizeof(WCHAR));
-		GetPrivateProfileString(noteSection, L"date", L"", dateString, 20, dataPath);
+		GetPrivateProfileString(noteSection, L"date", 
+			L"", dateString, 20, dataPath);
 
 		// content
 		WCHAR* contentString = new WCHAR[MAX_LOADSTRING];
 		ZeroMemory(contentString, MAX_LOADSTRING * sizeof(WCHAR));
-		GetPrivateProfileString(noteSection, L"content", L"", contentString, MAX_LOADSTRING, dataPath);
+		GetPrivateProfileString(noteSection, L"content", 
+			L"", contentString, MAX_LOADSTRING, dataPath);
 
 		// tag string
 		WCHAR* tagString = new WCHAR[MAX_LOADSTRING];
 		ZeroMemory(tagString, MAX_LOADSTRING * sizeof(WCHAR));
-		GetPrivateProfileString(noteSection, L"tagstring", L"", tagString, MAX_LOADSTRING, dataPath);
+		GetPrivateProfileString(noteSection, L"tagstring", 
+			L"", tagString, MAX_LOADSTRING, dataPath);
 
-		if (wcslen(dateString) == 0 || wcslen(contentString) == 0 || wcslen(tagString) == 0)
+		if (wcslen(dateString) == 0 || wcslen(contentString) == 0 || 
+			wcslen(tagString) == 0)
 		{
 			if (dateString != NULL)
 			{
@@ -382,26 +400,24 @@ bool NoteBook::ReadDataFromFile()
 
 	return true;
 }
-
-// Check the data file is new
+//******************************************************************************
 bool NoteBook::IsCreateNewDataFile()
 {
 	return InitDataFile();
 }
 
-// Add tag
+//==============================================================================
+
 void NoteBook::AddNewTagFromFile(Tag* value)
 {
 	this->tagHashTable[value->GetHashCode()].push_back(value);
 }
-
-// Add note
+//******************************************************************************
 void NoteBook::AddNewNoteFromFile(Note* value)
 {
 	this->noteList.push_back(value);
 }
-
-// Add new note
+//******************************************************************************
 void NoteBook::AddNewNote(Note* value)
 {
 	WCHAR* tagToken = new WCHAR[MAX_LOADSTRING];
@@ -451,15 +467,13 @@ void NoteBook::AddNewNote(Note* value)
 		tagToken = NULL;
 	}
 }
-
-// Add new tag
+//******************************************************************************
 void NoteBook::AddNewTag(Tag* value)
 {
 	this->tagHashTable[value->GetHashCode()].push_back(value);
 	tagCount++;
 }
-
-// Delete a note
+//******************************************************************************
 void NoteBook::DeteleNote(Note* value)
 {
 	int pos = 0;
@@ -519,8 +533,7 @@ void NoteBook::DeteleNote(Note* value)
 		tagToken = NULL;
 	}
 }
-
-// Modify a note
+//******************************************************************************
 void NoteBook::ModifyNote(int pos, WCHAR* content, WCHAR* tagString)
 {
 	Note* noteTemp = this->GetNoteAt(pos);
@@ -528,8 +541,7 @@ void NoteBook::ModifyNote(int pos, WCHAR* content, WCHAR* tagString)
 	noteTemp = new Note(content, tagString);
 	this->AddNewNote(noteTemp);
 }
-
-// Add a note index to tag
+//******************************************************************************
 void NoteBook::AddNoteIndex(int pos, WCHAR* tagToken)
 {
 	// Search tag
@@ -571,8 +583,7 @@ void NoteBook::AddNoteIndex(int pos, WCHAR* tagToken)
 	// Add note index to tag
 	tagTemp->AddNoteIndex(pos);
 }
-
-// Search a tag base on its name
+//******************************************************************************
 Tag* NoteBook::SearchTag(WCHAR* name)
 {
 	int code = GetHashCode(name);
@@ -596,14 +607,36 @@ Tag* NoteBook::SearchTag(WCHAR* name)
 
 	return NULL;
 }
-
-// Add new note (override)
+//******************************************************************************
 void NoteBook::AddNewNote(WCHAR* content, WCHAR* tagString)
 {
 	Note* noteTemp = new Note(content, tagString);
 	this->AddNewNote(noteTemp);
 }
+//******************************************************************************
+void NoteBook::DeleteNoteAt(int pos)
+{
+	Note* noteTemp = GetNoteAt(pos);
+	this->DeteleNote(noteTemp);
+}
 
+//==============================================================================
+
+int NoteBook::GetTagCount()
+{
+	return this->tagCount;
+}
+//******************************************************************************
+int NoteBook::GetNoteCount()
+{
+	return this->noteCount;
+}
+//******************************************************************************
+vector<Note*> NoteBook::GetNoteList()
+{
+	return this->noteList;
+}
+//******************************************************************************
 int GetHashCode(WCHAR* string)
 {
 	int code = 0;
@@ -613,12 +646,12 @@ int GetHashCode(WCHAR* string)
 	}
 	return code % 131;
 }
-
+//******************************************************************************
 vector<vector<Tag*>> NoteBook::GetTagList()
 {
 	return this->tagHashTable;
 }
-
+//******************************************************************************
 Note* NoteBook::GetNoteAt(int pos)
 {
 	if (pos >= 0 && pos < this->noteList.size())
@@ -626,7 +659,7 @@ Note* NoteBook::GetNoteAt(int pos)
 	else
 		return NULL;
 }
-
+//******************************************************************************
 Tag* NoteBook::GetTag(int pos)
 {
 	int index = 0;
@@ -645,26 +678,7 @@ Tag* NoteBook::GetTag(int pos)
 	return NULL;
 }
 
-void NoteBook::DeleteNoteAt(int pos)
-{
-	Note* noteTemp = GetNoteAt(pos);
-	this->DeteleNote(noteTemp);
-}
-
-int NoteBook::GetTagCount()
-{
-	return this->tagCount;
-}
-
-int NoteBook::GetNoteCount()
-{
-	return this->noteCount;
-}
-
-vector<Note*> NoteBook::GetNoteList()
-{
-	return this->noteList;
-}
+//==============================================================================
 
 void NoteBook::CleanUpTagList()
 {

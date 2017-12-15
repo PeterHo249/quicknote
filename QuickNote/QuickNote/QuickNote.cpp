@@ -246,7 +246,7 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     return (INT_PTR)FALSE;
 }
 
-INT_PTR CALLBACK	ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
 
@@ -257,40 +257,9 @@ INT_PTR CALLBACK	ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 	{
 	case WM_INITDIALOG:
 	{
-		// Initial tag list
-		TreeView_DeleteAllItems(tagTreeView);
-		vector<vector<Tag*>> tagList = myNoteBook->GetTagList();
-
-		TVINSERTSTRUCT allnoteTvItem;
-		allnoteTvItem.hParent = NULL;
-		allnoteTvItem.hInsertAfter = TVI_LAST;
-		allnoteTvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
-		allnoteTvItem.item.pszText = L"All Note";
-		allnoteTvItem.item.lParam = (LPARAM)-1;
-		TreeView_InsertItem(tagTreeView, &allnoteTvItem);
-
-		int index = 0;
-		for (unsigned int i = 0; i < tagList.size(); i++)
-		{
-			for (unsigned int j = 0; j < tagList[i].size(); j++)
-			{
-				TVINSERTSTRUCT tvItem;
-				tvItem.hParent = NULL;
-				tvItem.hInsertAfter = TVI_LAST;
-				tvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
-				tvItem.item.pszText = tagList[i][j]->GetName();
-				tvItem.item.lParam = (LPARAM)index;
-				TreeView_InsertItem(tagTreeView, &tvItem);
-				index++;
-			}
-		}
-
-		// Initial note list
-		TreeView_DeleteAllItems(noteTreeView);
-
+		RefreshView(hDlg);
 		return (INT_PTR)TRUE;
 	}
-		break;
 
 	case WM_NOTIFY:
 	{
@@ -317,7 +286,8 @@ INT_PTR CALLBACK	ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 
 				if ((int)tvItem.lParam != -1)
 				{
-					vector<int> noteIndexList = myNoteBook->GetTag((int)tvItem.lParam)->GetNoteList();
+					vector<int> noteIndexList = 
+						myNoteBook->GetTag((int)tvItem.lParam)->GetNoteList();
 
 					for (unsigned int i = 0; i < noteIndexList.size(); i++)
 					{
@@ -421,7 +391,7 @@ INT_PTR CALLBACK	ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 	return (INT_PTR)FALSE;
 }
 
-INT_PTR CALLBACK	AddNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK AddNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
 
@@ -485,7 +455,7 @@ INT_PTR CALLBACK	AddNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 	return (INT_PTR)FALSE;
 }
 
-INT_PTR CALLBACK	Statistics_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK Statistics_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
 
@@ -555,7 +525,7 @@ INT_PTR CALLBACK	Statistics_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARA
 	return (INT_PTR)FALSE;
 }
 
-INT_PTR CALLBACK	Modify_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK Modify_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
 
@@ -688,9 +658,7 @@ void RefreshView(HWND hDlg)
 			tvItem.hInsertAfter = TVI_LAST;
 			tvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
 			tvItem.item.pszText = tagList[i][j]->GetName();
-			WCHAR* tempStr = new WCHAR[10];
-			wsprintf(tempStr, L"%d", index);
-			tvItem.item.lParam = (LPARAM)tempStr;
+			tvItem.item.lParam = (LPARAM)index;
 			TreeView_InsertItem(tagTreeView, &tvItem);
 			index++;
 		}

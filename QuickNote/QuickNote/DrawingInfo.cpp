@@ -5,7 +5,7 @@
 DrawingInfo::DrawingInfo()
 {
 }
-
+//******************************************************************************
 DrawingInfo::~DrawingInfo()
 {
 	for (unsigned int i = 0; i < tagInfoList.size(); i++)
@@ -17,13 +17,15 @@ DrawingInfo::~DrawingInfo()
 		}
 	}
 }
-
+//******************************************************************************
 DrawingInfo::DrawingInfo(HDC hdc, NoteBook* noteBook)
 {
 	this->hdc = hdc;
 	GetData(noteBook);
 	AssignPosition();
 }
+
+//==============================================================================
 
 void DrawingInfo::Draw()
 {
@@ -32,6 +34,8 @@ void DrawingInfo::Draw()
 		tagInfoList[i]->Draw();
 	}
 }
+
+//==============================================================================
 
 void DrawingInfo::GetData(NoteBook* noteBook)
 {
@@ -50,9 +54,11 @@ void DrawingInfo::GetData(NoteBook* noteBook)
 			ZeroMemory(inputName, (length + 1) * sizeof(WCHAR));
 			wcscpy_s(inputName, length + 1, temp);
 
-			float ratio = (float)data[i][j]->GetNoteList().size() / noteBook->GetTagCount();
+			float ratio = (float)data[i][j]->GetNoteList().size() / 
+				noteBook->GetTagCount();
 			
-			tagInfoList.push_back(new TagDrawingInfo(this->hdc, inputName, (int)(ratio * 100)));
+			tagInfoList.push_back(
+				new TagDrawingInfo(this->hdc, inputName, (int)(ratio * 100)));
 		}
 	}
 
@@ -67,7 +73,7 @@ void DrawingInfo::GetData(NoteBook* noteBook)
 		tagInfoList.pop_back();
 	}
 }
-
+//******************************************************************************
 void DrawingInfo::SortTagInfoList()
 {
 	int size = this->tagInfoList.size();
@@ -88,14 +94,13 @@ void DrawingInfo::SortTagInfoList()
 		}
 	}
 }
-
+//******************************************************************************
 void DrawingInfo::AssignPosition()
 {
 	if (this->tagInfoList.size() == 0)
 		return;
 
 	int tempLeft, tempTop, tempRight, tempBottom;
-
 	int currentDirection;
 
 	RectF* lastRect = NULL;
