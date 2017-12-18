@@ -11,6 +11,9 @@ NoteBook::NoteBook()
 		tagHashTable.push_back(temp);
 	}
 
+	blankPos.clear();
+	noteOrder.clear();
+
 	dataPath = GetDataFilePath();
 	if (!IsCreateNewDataFile())
 		ReadDataFromFile();
@@ -60,6 +63,8 @@ NoteBook::~NoteBook()
 		delete dataPath;
 		dataPath = NULL;
 	}
+
+	noteOrder.clear();
 }
 
 //==============================================================================
@@ -152,6 +157,32 @@ bool NoteBook::WriteDataToFile()
 	{
 		delete[] blankPosString;
 		blankPosString = NULL;
+	}
+
+	int noteOrderSize = noteOrder.size();
+	WCHAR* noteOrderString = new WCHAR[noteOrderSize * 4];
+	ZeroMemory(noteOrderString, noteOrderSize * 4 * sizeof(WCHAR));
+	for (int i = 0; i < noteOrderSize; i++)
+	{
+		if (i == 0)
+		{
+			wsprintf(noteOrderString, L"%d", noteOrder[i]);
+		}
+		else
+		{
+			wsprintf(noteOrderString, L"%s %d", noteOrderString, noteOrder[i]);
+		}
+	}
+	if (noteOrderSize == 0)
+		WritePrivateProfileString(L"notebook", L"noteorder",
+			L"", dataPath);
+	else
+		WritePrivateProfileString(L"notebook", L"noteorder",
+			noteOrderString, dataPath);
+	if (noteOrderString != NULL)
+	{
+		delete[] noteOrderString;
+		noteOrderString = NULL;
 	}
 
 	// Write tag
@@ -281,6 +312,40 @@ bool NoteBook::ReadDataFromFile()
 			}
 		}
 		this->blankPos.push_back(_wtoi(numString));
+	}
+	if (tempString != NULL)
+	{
+		delete[] tempString;
+		tempString = NULL;
+	}
+
+	// Note order
+	tempString = new WCHAR[MAX_LOADSTRING];
+	ZeroMemory(tempString, MAX_LOADSTRING * sizeof(WCHAR));
+	GetPrivateProfileString(L"notebook", L"noteorder",
+		L"", tempString, MAX_LOADSTRING, dataPath);
+	if (wcslen(tempString) != 0)
+	{
+		this->noteOrder.clear();
+		WCHAR numString[5];
+		ZeroMemory(numString, 5 * sizeof(WCHAR));
+		int tempIndex = 0;
+		int numIndex = 0;
+		for (; tempString[tempIndex] != 0; tempIndex++)
+		{
+			if (tempString[tempIndex] == L' ')
+			{
+				this->noteOrder.push_back(_wtoi(numString));
+				ZeroMemory(numString, 5 * sizeof(WCHAR));
+				numIndex = 0;
+			}
+			else
+			{
+				numString[numIndex] = tempString[tempIndex];
+				numIndex++;
+			}
+		}
+		this->noteOrder.push_back(_wtoi(numString));
 	}
 	if (tempString != NULL)
 	{
@@ -439,6 +504,9 @@ void NoteBook::AddNewNote(Note* value)
 	}
 	noteCount++;
 
+	// Add note index to NoteOrder
+	noteOrder.push_back(pos);
+
 	// Add note index to tag
 	int tokenIndex = 0;
 	for (int i = 0; tagString[i] != 0; i++)
@@ -516,6 +584,16 @@ void NoteBook::DeteleNote(Note* value)
 
 	if (tagTemp != NULL)
 		tagTemp->DeleteNoteIndex(pos);
+
+	// Delete note index in NoteOrder
+	for (unsigned int i = 0; i < noteOrder.size(); i++)
+	{
+		if (noteOrder[i] == pos)
+		{
+			noteOrder.erase(noteOrder.begin() + i);
+			break;
+		}
+	}
 
 	// Delete note
 	if (noteList[pos] != NULL)
@@ -676,6 +754,11 @@ Tag* NoteBook::GetTag(int pos)
 	}
 
 	return NULL;
+}
+//******************************************************************************
+vector<int> NoteBook::GetNoteOrder()
+{
+	return this->noteOrder;
 }
 
 //==============================================================================

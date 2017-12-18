@@ -10,6 +10,7 @@ private:
 	vector< vector<Tag*> > tagHashTable;
 	vector<Note*> noteList;
 	vector<int> blankPos;
+	vector<int> noteOrder;
 	WCHAR* dataPath;
 
 	//==========================================================================
@@ -71,6 +72,7 @@ public:
 	vector<vector<Tag*>> GetTagList();
 	Note* GetNoteAt(int pos);
 	Tag* GetTag(int pos);
+	vector<int> GetNoteOrder();
 };
 
 int GetHashCode(WCHAR* string);

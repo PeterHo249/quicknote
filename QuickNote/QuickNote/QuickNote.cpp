@@ -307,18 +307,20 @@ INT_PTR CALLBACK ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 				}
 				else
 				{
-					vector<Note*> noteList = myNoteBook->GetNoteList();
-					for (unsigned int i = 0; i < noteList.size(); i++)
+					vector<int> noteIndexList = myNoteBook->GetNoteOrder();
+
+					for (unsigned int i = 0; i < noteIndexList.size(); i++)
 					{
-						if (noteList[i] != NULL)
+						Note* pNote = myNoteBook->GetNoteAt(noteIndexList[i]);
+						if (pNote != NULL)
 						{
 							// Add new item to tree view
 							TVINSERTSTRUCT tvItem;
 							tvItem.hParent = NULL;
 							tvItem.hInsertAfter = TVI_LAST;
 							tvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
-							tvItem.item.pszText = noteList[i]->GetPreview();
-							tvItem.item.lParam = (LPARAM)i;
+							tvItem.item.pszText = pNote->GetPreview();
+							tvItem.item.lParam = (LPARAM)noteIndexList[i];
 							TreeView_InsertItem(noteTreeView, &tvItem);
 						}
 					}
@@ -640,11 +642,15 @@ void RefreshView(HWND hDlg)
 
 	vector<vector<Tag*>> tagList = myNoteBook->GetTagList();
 
+	WCHAR* tempStr = new WCHAR[100];
+	ZeroMemory(tempStr, 100 * sizeof(WCHAR));
+
 	TVINSERTSTRUCT allnoteTvItem;
 	allnoteTvItem.hParent = NULL;
 	allnoteTvItem.hInsertAfter = TVI_LAST;
 	allnoteTvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
-	allnoteTvItem.item.pszText = L"All note";
+	wsprintf(tempStr, L"All Note (%d)", myNoteBook->GetNoteCount());
+	allnoteTvItem.item.pszText = tempStr;
 	allnoteTvItem.item.lParam = (LPARAM)-1;
 	TreeView_InsertItem(tagTreeView, &allnoteTvItem);
 
@@ -653,11 +659,14 @@ void RefreshView(HWND hDlg)
 	{
 		for (unsigned int j = 0; j < tagList[i].size(); j++)
 		{
+			ZeroMemory(tempStr, 100 * sizeof(WCHAR));
 			TVINSERTSTRUCT tvItem;
 			tvItem.hParent = NULL;
 			tvItem.hInsertAfter = TVI_LAST;
 			tvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
-			tvItem.item.pszText = tagList[i][j]->GetName();
+			wsprintf(tempStr, L"%s (%d)",
+				tagList[i][j]->GetName(), tagList[i][j]->GetNoteList().size());
+			tvItem.item.pszText = tempStr;
 			tvItem.item.lParam = (LPARAM)index;
 			TreeView_InsertItem(tagTreeView, &tvItem);
 			index++;
