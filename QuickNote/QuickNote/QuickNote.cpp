@@ -283,46 +283,29 @@ INT_PTR CALLBACK ViewNote_Dialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 				SetDlgItemText(hDlg, IDC_VIEW_TAGTXT, L"");
 
 				TVITEM tvItem = pnmtv->itemNew;
-
+				vector<int> noteIndexList;
 				if ((int)tvItem.lParam != -1)
 				{
-					vector<int> noteIndexList = 
+					noteIndexList = 
 						myNoteBook->GetTag((int)tvItem.lParam)->GetNoteList();
-
-					for (unsigned int i = 0; i < noteIndexList.size(); i++)
-					{
-						Note* pNote = myNoteBook->GetNoteAt(noteIndexList[i]);
-						if (pNote != NULL)
-						{
-							// Add new item to tree view
-							TVINSERTSTRUCT tvItem;
-							tvItem.hParent = NULL;
-							tvItem.hInsertAfter = TVI_LAST;
-							tvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
-							tvItem.item.pszText = pNote->GetPreview();
-							tvItem.item.lParam = (LPARAM)noteIndexList[i];
-							TreeView_InsertItem(noteTreeView, &tvItem);
-						}
-					}
 				}
 				else
 				{
-					vector<int> noteIndexList = myNoteBook->GetNoteOrder();
-
-					for (unsigned int i = 0; i < noteIndexList.size(); i++)
+					noteIndexList = myNoteBook->GetNoteOrder();
+				}
+				// Add item to tree view
+				for (unsigned int i = 0; i < noteIndexList.size(); i++)
+				{
+					Note* pNote = myNoteBook->GetNoteAt(noteIndexList[i]);
+					if (pNote != NULL)
 					{
-						Note* pNote = myNoteBook->GetNoteAt(noteIndexList[i]);
-						if (pNote != NULL)
-						{
-							// Add new item to tree view
-							TVINSERTSTRUCT tvItem;
-							tvItem.hParent = NULL;
-							tvItem.hInsertAfter = TVI_LAST;
-							tvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
-							tvItem.item.pszText = pNote->GetPreview();
-							tvItem.item.lParam = (LPARAM)noteIndexList[i];
-							TreeView_InsertItem(noteTreeView, &tvItem);
-						}
+						TVINSERTSTRUCT tvItem;
+						tvItem.hParent = NULL;
+						tvItem.hInsertAfter = TVI_LAST;
+						tvItem.item.mask = TVIF_TEXT | TVIF_PARAM;
+						tvItem.item.pszText = pNote->GetPreview();
+						tvItem.item.lParam = (LPARAM)noteIndexList[i];
+						TreeView_InsertItem(noteTreeView, &tvItem);
 					}
 				}
 			}
