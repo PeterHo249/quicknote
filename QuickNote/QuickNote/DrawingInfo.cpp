@@ -64,8 +64,8 @@ void DrawingInfo::GetData(NoteBook* noteBook)
 
 	SortTagInfoList();
 
-	// Trim list into size 100
-	while (tagInfoList.size() > 100)
+	// Trim list into size 50
+	while (tagInfoList.size() > 50)
 	{
 		if (tagInfoList[tagInfoList.size() - 1] != NULL)
 			delete tagInfoList[tagInfoList.size() - 1];
