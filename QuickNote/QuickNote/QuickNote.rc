@@ -31,9 +31,9 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_QUICKNOTE           ICON                    "QuickNote.ico"
+IDI_QUICKNOTE           ICON                    "icons8_note_50_Nbf_icon.ico"
 
-IDI_SMALL               ICON                    "small.ico"
+IDI_SMALL               ICON                    "icons8_note_50_Nbf_icon.ico"
 
 IDI_SYSTRAYICON         ICON                    "icons8_note_50_Nbf_icon.ico"
 
@@ -76,15 +76,16 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "About QuickNote"
-FONT 8, "MS Shell Dlg", 0, 0, 0x1
+IDD_ABOUTBOX DIALOGEX 0, 0, 159, 72
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About"
+FONT 10, "Microsoft Sans Serif", 400, 0, 0x0
 BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,14,14,21,20
-    LTEXT           "QuickNote, Version 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2017",IDC_STATIC,42,26,114,8
-    DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
+    ICON            IDI_SYSTRAYICON,IDC_STATIC,14,14,16,16
+    LTEXT           "QuickNote, Version 1.0",IDC_STATIC,38,14,114,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2017",IDC_STATIC,38,39,114,8
+    DEFPUSHBUTTON   "OK",IDOK,102,51,50,14,WS_GROUP
+    LTEXT           "Ho Xuan Dung - 1512077",IDC_STATIC,38,27,114,8
 END
 
 IDD_VIEWNOTE DIALOGEX 0, 0, 381, 225
@@ -168,9 +169,9 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 163
+        RIGHTMARGIN, 152
         TOPMARGIN, 7
-        BOTTOMMARGIN, 55
+        BOTTOMMARGIN, 65
     END
 
     IDD_VIEWNOTE, DIALOG
