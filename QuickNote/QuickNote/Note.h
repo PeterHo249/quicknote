@@ -32,7 +32,9 @@ public:
 
 	//==========================================================================
 
-	// Standardize tag string
+	// Standardize tag string (remove space)
 	void StandardizeTagString();
+	// Standardize content of note (remove \r\n)
+	void StandardizeContent();
 };
 

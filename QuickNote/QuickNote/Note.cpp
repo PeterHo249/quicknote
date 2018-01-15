@@ -14,6 +14,7 @@ Note::Note(WCHAR* content, WCHAR* tagString)
 	this->content = content;
 	this->tagString = tagString;
 	StandardizeTagString();
+	StandardizeContent();
 	this->previewNote = GeneratePreviewNote();
 }
 //******************************************************************************
@@ -23,6 +24,7 @@ Note::Note(WCHAR* date, WCHAR* content, WCHAR* tagstring)
 	this->content = content;
 	this->tagString = tagstring;
 	StandardizeTagString();
+	StandardizeContent();
 	this->previewNote = GeneratePreviewNote();
 }
 //******************************************************************************
@@ -110,22 +112,43 @@ void Note::StandardizeTagString()
 	bool validFlag = false;
 	for (int i = 0; i < length; i++)
 	{
-		if (this->tagString[i] == L' ')
+		if (this->tagString[i] == L' ' || this->tagString[i] == L'\r' 
+			|| this->tagString[i] == L'\n')
 			continue;
 
 		if (this->tagString[i] == L',' && i != (length - 1))
 		{
-			newtagString[newtagIndex] = L',';
-			newtagIndex++;
-			newtagString[newtagIndex] = L' ';
-			newtagIndex++;
-			continue;
+			if (validFlag)
+			{
+				newtagString[newtagIndex] = L',';
+				newtagIndex++;
+				newtagString[newtagIndex] = L' ';
+				newtagIndex++;
+				validFlag = false;
+				continue;
+			}
+			else
+			{
+				continue;
+			}
 		}
 
 		newtagString[newtagIndex] = this->tagString[i];
 		newtagIndex++;
+		validFlag = true;
 	}
 
 	delete[] this->tagString;
 	this->tagString = newtagString;
+}
+
+//==============================================================================
+void Note::StandardizeContent()
+{
+	int length = wcslen(this->content);
+	for (int i = 0; i < length; i++)
+	{
+		if (this->content[i] == L'\r' || this->content[i] == L'\n')
+			this->content[i] = L' ';
+	}
 }
